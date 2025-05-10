@@ -7,7 +7,7 @@ function PANEL:Init()
 
     local title = self:Add("ax.text")
     title:Dock(TOP)
-    title:SetFont("ax.fonts.title")
+    title:SetFont("parallax.title")
     title:SetText("INVENTORY")
 
     local inventory = self:Add("ax.inventory")

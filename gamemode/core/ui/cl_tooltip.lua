@@ -43,19 +43,19 @@ end
 function PANEL:SizeToContents()
     local title = ax.localization:GetPhrase(self.title) or self.title
     local desc = ax.localization:GetPhrase(self.description) or self.description
-    local descWrapped = ax.util:GetWrappedText(desc, "ax.fonts", ScreenScale(128))
+    local descWrapped = ax.util:GetWrappedText(desc, "parallax", ScreenScale(128))
 
     local width = 0
-    local titleWidth = ax.util:GetTextWidth("ax.fonts.large.bold", title)
+    local titleWidth = ax.util:GetTextWidth("parallax.large.bold", title)
     width = math.max(width, titleWidth)
     for i = 1, #descWrapped do
-        local descWidth = ax.util:GetTextWidth("ax.fonts", descWrapped[i])
+        local descWidth = ax.util:GetTextWidth("parallax", descWrapped[i])
         width = math.max(width, descWidth)
     end
 
-    local height = ax.util:GetTextHeight("ax.fonts.large.bold")
+    local height = ax.util:GetTextHeight("parallax.large.bold")
     for i = 1, #descWrapped do
-        height = height + ax.util:GetTextHeight("ax.fonts")
+        height = height + ax.util:GetTextHeight("parallax")
     end
 
     self:SetSize(width + 32, height)
@@ -94,12 +94,12 @@ function PANEL:Paint(width, height)
     ax.util:DrawBlur(self)
     draw.RoundedBox(0, 0, 0, width, height, Color(0, 0, 0, 200))
     local title = ax.localization:GetPhrase(self.title) or self.title
-    draw.SimpleText(title, "ax.fonts.large.bold", 8, 0, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    draw.SimpleText(title, "parallax.large.bold", 8, 0, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 
     local desc = ax.localization:GetPhrase(self.description) or self.description
-    local descWrapped = ax.util:GetWrappedText(desc, "ax.fonts", width - 32)
+    local descWrapped = ax.util:GetWrappedText(desc, "parallax", width - 32)
     for i = 1, #descWrapped do
-        draw.SimpleText(descWrapped[i], "ax.fonts", 16, 32 + (i - 1) * ax.util:GetTextHeight("ax.fonts"), color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(descWrapped[i], "parallax", 16, 32 + (i - 1) * ax.util:GetTextHeight("parallax"), color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
 end
 

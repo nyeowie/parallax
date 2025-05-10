@@ -14,7 +14,7 @@ function chat.AddText(...)
 
     local args = {...}
     local currentColor = color_white
-    local font = "ax.fonts.chat"
+    local font = "parallax.chat"
     local maxWidth = ax.gui.chatbox:GetWide() - 20
 
     local markupStr = ""

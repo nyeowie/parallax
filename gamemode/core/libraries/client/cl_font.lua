@@ -4,7 +4,7 @@
 ax.font = {}
 ax.font.stored = {}
 
-surface.axCreateFont = surface.axCreateFont or surface.CreateFont
+surface.CreateFontInternal = surface.CreateFontInternal or surface.CreateFont
 
 --- Registers a new font.
 -- @realm client
@@ -15,7 +15,7 @@ function surface.CreateFont(name, data)
         ax.font.stored[name] = data
     end
 
-    surface.axCreateFont(name, data)
+    surface.CreateFontInternal(name, data)
 end
 
 --- Returns a font by its name.

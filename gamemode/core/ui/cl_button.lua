@@ -36,7 +36,7 @@ AccessorFunc(PANEL, "inertia", "Inertia", FORCE_NUMBER)
 AccessorFunc(PANEL, "doRippleEffect", "DoRippleEffect", FORCE_BOOL)
 
 function PANEL:Init()
-    self:SetFont("ax.fonts.button")
+    self:SetFont("parallax.button")
     self:SetTextColorProperty(color_white)
     self:SetContentAlignment(4)
     self:SetTall(ScreenScale(18))
@@ -138,7 +138,7 @@ end
 
 function PANEL:Think()
     if ( !self:IsHovered() and ( self.textColorTarget != self.baseTextColor or self.heightTarget != self.baseHeight) ) then
-        self:SetFont("ax.fonts.button")
+        self:SetFont("parallax.button")
 
         self.heightTarget = self.baseHeight
         self.textColorTarget = self.baseTextColor or color_white
@@ -159,7 +159,7 @@ end
 function PANEL:OnCursorEntered()
     surface.PlaySound("ax.button.enter")
 
-    self:SetFont("ax.fonts.button.hover")
+    self:SetFont("parallax.button.hover")
 
     self.heightTarget = self.baseHeight * 1.25
     self.textColorTarget = ax.config:Get("color.schema")
@@ -196,7 +196,7 @@ AccessorFunc(PANEL, "backgroundAlphaUnHovered", "BackgroundAlphaUnHovered", FORC
 AccessorFunc(PANEL, "backgroundColor", "BackgroundColor")
 
 function PANEL:Init()
-    self:SetFont("ax.fonts.button.small")
+    self:SetFont("parallax.button.small")
     self:SetTextColorProperty(color_white)
     self:SetContentAlignment(5)
     self:SetTall(ScreenScale(12))
@@ -269,7 +269,7 @@ end
 
 function PANEL:Think()
     if ( !self:IsHovered() and ( self.textColorTarget != self.baseTextColor ) ) then
-        self:SetFont("ax.fonts.button.small")
+        self:SetFont("parallax.button.small")
 
         self.textColorTarget = self.baseTextColor or color_white
 
@@ -286,7 +286,7 @@ end
 function PANEL:OnCursorEntered()
     surface.PlaySound("ax.button.enter")
 
-    self:SetFont("ax.fonts.button.small.hover")
+    self:SetFont("parallax.button.small.hover")
 
     self.textColorTarget = self.baseTextColorTarget or color_black
 

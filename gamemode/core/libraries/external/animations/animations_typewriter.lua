@@ -77,7 +77,7 @@ function PANEL:Configure(config)
             self.Config.CursorColor = DDIStyling.Colors.Secondary
         end
         if not config or not config.Font then
-            self.Config.Font = DDIStyling.Fonts[1]
+            self.Config.Font = DDIStyling.fonts[1]
         end
         if not config or not config.CursorChar then
             self.Config.CursorChar = DDIStyling.CursorChars[1]

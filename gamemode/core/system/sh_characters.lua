@@ -122,7 +122,7 @@ ax.character:RegisterVariable("model", {
     OnPopulate = function(self, parent, payload, client)
         local label = parent:Add("ax.text")
         label:Dock(TOP)
-        label:SetFont("ax.fonts.button")
+        label:SetFont("parallax.button")
         label:SetText(self.Name or k)
 
         local scroller = parent:Add("DScrollPanel")

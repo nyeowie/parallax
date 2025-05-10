@@ -25,7 +25,7 @@ function PANEL:Populate()
     local title = self:Add("ax.text")
     title:Dock(TOP)
     title:DockMargin(padding, padding, 0, 0)
-    title:SetFont("ax.fonts.title")
+    title:SetFont("parallax.title")
     title:SetText("SETTINGS")
 
     local navigation = self:Add("EditablePanel")

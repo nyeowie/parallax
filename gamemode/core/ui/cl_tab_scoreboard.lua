@@ -11,7 +11,7 @@ function PANEL:Init()
 
     local title = self:Add("ax.text")
     title:Dock(TOP)
-    title:SetFont("ax.fonts.title")
+    title:SetFont("parallax.title")
     title:SetText("SCOREBOARD")
 
     self.container = self:Add("DScrollPanel")
@@ -86,7 +86,7 @@ function PANEL:Init()
     self.teamName:SetTall(ScreenScale(10))
     self.teamName:Dock(TOP)
     self.teamName:DockMargin(ScreenScale(2), 0, 0, 0)
-    self.teamName:SetFont("ax.fonts.italic.bold")
+    self.teamName:SetFont("parallax.italic.bold")
     self.teamName:SetContentAlignment(7)
 
     self.container = self:Add("EditablePanel")
@@ -142,11 +142,11 @@ function PANEL:Init()
     self.avatar:SetPos(0, 0)
 
     self.name = self:Add("ax.text")
-    self.name:SetFont("ax.fonts.large.bold")
+    self.name:SetFont("parallax.large.bold")
 
     self.ping = self:Add("ax.text")
     self.ping:SetSize(ScreenScale(32), self:GetTall())
-    self.ping:SetFont("ax.fonts.large.bold")
+    self.ping:SetFont("parallax.large.bold")
     self.ping:SetContentAlignment(6)
 
     self:SetMouseInputEnabled(true)

@@ -59,7 +59,7 @@ function PANEL:PopulateFactionSelect()
     local title = self:Add("ax.text")
     title:Dock(TOP)
     title:DockMargin(padding, padding, 0, 0)
-    title:SetFont("ax.fonts.title")
+    title:SetFont("parallax.title")
     title:SetText(string.upper("mainmenu.create.character.faction"))
 
     local navigation = self:Add("EditablePanel")
@@ -93,7 +93,7 @@ function PANEL:PopulateFactionSelect()
 
         local name = (v.Name and string.upper(v.Name)) or "UNKNOWN FACTION"
         local description = (v.Description and string.upper(v.Description)) or "UNKNOWN FACTION DESCRIPTION"
-        local descriptionWrapped = ax.util:GetWrappedText(description, "ax.fonts.button.small", factionList:GetTall() * 1.5)
+        local descriptionWrapped = ax.util:GetWrappedText(description, "parallax.button.small", factionList:GetTall() * 1.5)
 
         local factionButton = factionList:Add("ax.button.small")
         factionButton:Dock(LEFT)
@@ -131,11 +131,11 @@ function PANEL:PopulateFactionSelect()
 
             local textColor = factionButton:GetTextColor()
 
-            draw.SimpleText(name, factionButton:IsHovered() and "ax.fonts.button.large.hover" or "ax.fonts.button.large", tinyPadding, imageHeight - boxHeight + boxHeightStatic / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(name, factionButton:IsHovered() and "parallax.button.large.hover" or "parallax.button.large", tinyPadding, imageHeight - boxHeight + boxHeightStatic / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
-            local textHeight = ax.util:GetTextHeight("ax.fonts.button.tiny") - ScreenScale(4)
+            local textHeight = ax.util:GetTextHeight("parallax.button.tiny") - ScreenScale(4)
             for i = 1, #descriptionWrapped do
-                draw.SimpleText(descriptionWrapped[i], "ax.fonts.button.tiny", tinyPadding, imageHeight - boxHeight + boxHeightStatic + (i - 1) * textHeight, ColorAlpha(textColor, 255 * inertia), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(descriptionWrapped[i], "parallax.button.tiny", tinyPadding, imageHeight - boxHeight + boxHeightStatic + (i - 1) * textHeight, ColorAlpha(textColor, 255 * inertia), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
         end
 
@@ -158,7 +158,7 @@ function PANEL:PopulateCreateCharacter()
     local title = self:Add("ax.text")
     title:Dock(TOP)
     title:DockMargin(padding, padding, 0, 0)
-    title:SetFont("ax.fonts.title")
+    title:SetFont("parallax.title")
     title:SetText(string.upper("mainmenu.create.character"))
 
     local navigation = self:Add("EditablePanel")
@@ -266,7 +266,7 @@ function PANEL:PopulateCreateCharacterForm()
 
             local label = self.characterCreateForm:Add("ax.text")
             label:Dock(TOP)
-            label:SetFont("ax.fonts.button")
+            label:SetFont("parallax.button")
             label:SetText(v.Name or k)
 
             zPos = zPos - 1
@@ -276,7 +276,7 @@ function PANEL:PopulateCreateCharacterForm()
             local entry = self.characterCreateForm:Add("ax.text.entry")
             entry:Dock(TOP)
             entry:DockMargin(0, 0, 0, smallPadding)
-            entry:SetFont("ax.fonts.button")
+            entry:SetFont("parallax.button")
             entry:SetTextColor(color_white)
             entry:SetPlaceholderText(v.Default or "")
             entry:SetTall(ScreenScale(16))
@@ -300,7 +300,7 @@ function PANEL:PopulateCreateCharacterForm()
             local label = self.characterCreateForm:Add("ax.text")
             label:Dock(TOP)
             label:SetText(v.Name or k)
-            label:SetFont("ax.fonts.button")
+            label:SetFont("parallax.button")
             label:SetTextColor(color_white)
             label:SizeToContents()
 
@@ -311,7 +311,7 @@ function PANEL:PopulateCreateCharacterForm()
             local entry = self.characterCreateForm:Add("ax.text.entry")
             entry:Dock(TOP)
             entry:DockMargin(0, 0, 0, smallPadding)
-            entry:SetFont("ax.fonts.button.small")
+            entry:SetFont("parallax.button.small")
             entry:SetTextColor(color_white)
             entry:SetPlaceholderText(v.Default or "")
             entry:SetMultiline(true)

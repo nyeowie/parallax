@@ -192,7 +192,7 @@ function GM:HUDPaint()
     shouldDraw = hook.Run("ShouldDrawDebugHUD")
     if ( shouldDraw != false ) then
         local green = ax.config:Get("color.framework")
-        local width = math.max(ax.util:GetTextWidth("ax.fonts.developer", "Pos: " .. tostring(client:GetPos())), ax.util:GetTextWidth("ax.fonts.developer", "Ang: " .. tostring(client:EyeAngles())))
+        local width = math.max(ax.util:GetTextWidth("parallax.developer", "Pos: " .. tostring(client:GetPos())), ax.util:GetTextWidth("parallax.developer", "Ang: " .. tostring(client:EyeAngles())))
         local height = 16 * 6
 
         local character = client:GetCharacter()
@@ -205,15 +205,15 @@ function GM:HUDPaint()
         surface.SetDrawColor(backgroundColor)
         surface.DrawRect(x - padding, y - padding, width + padding * 2, height + padding * 2)
 
-        draw.SimpleText("[DEVELOPER HUD]", "ax.fonts.developer", x, y, green, TEXT_ALIGN_LEFT)
+        draw.SimpleText("[DEVELOPER HUD]", "parallax.developer", x, y, green, TEXT_ALIGN_LEFT)
 
-        draw.SimpleText("Pos: " .. tostring(client:GetPos()), "ax.fonts.developer", x, y + 16 * 1, green, TEXT_ALIGN_LEFT)
-        draw.SimpleText("Ang: " .. tostring(client:EyeAngles()), "ax.fonts.developer", x, y + 16 * 2, green, TEXT_ALIGN_LEFT)
-        draw.SimpleText("Health: " .. client:Health(), "ax.fonts.developer", x, y + 16 * 3, green, TEXT_ALIGN_LEFT)
-        draw.SimpleText("Ping: " .. client:Ping(), "ax.fonts.developer", x, y + 16 * 4, green, TEXT_ALIGN_LEFT)
+        draw.SimpleText("Pos: " .. tostring(client:GetPos()), "parallax.developer", x, y + 16 * 1, green, TEXT_ALIGN_LEFT)
+        draw.SimpleText("Ang: " .. tostring(client:EyeAngles()), "parallax.developer", x, y + 16 * 2, green, TEXT_ALIGN_LEFT)
+        draw.SimpleText("Health: " .. client:Health(), "parallax.developer", x, y + 16 * 3, green, TEXT_ALIGN_LEFT)
+        draw.SimpleText("Ping: " .. client:Ping(), "parallax.developer", x, y + 16 * 4, green, TEXT_ALIGN_LEFT)
 
         local fps = math.floor(1 / FrameTime())
-        draw.SimpleText("FPS: " .. fps, "ax.fonts.developer", x, y + 16 * 5, green, TEXT_ALIGN_LEFT)
+        draw.SimpleText("FPS: " .. fps, "parallax.developer", x, y + 16 * 5, green, TEXT_ALIGN_LEFT)
 
         if ( character ) then
             local name = character:GetName()
@@ -224,11 +224,11 @@ function GM:HUDPaint()
             end
             local inventoryText = "Inventories: " .. table.concat(inventories, ", ")
 
-            draw.SimpleText("[CHARACTER INFO]", "ax.fonts.developer", x, y + 16 * 7, green, TEXT_ALIGN_LEFT)
-            draw.SimpleText("Character: " .. tostring(character), "ax.fonts.developer", x, y + 16 * 8, green, TEXT_ALIGN_LEFT)
-            draw.SimpleText("Name: " .. name, "ax.fonts.developer", x, y + 16 * 9, green, TEXT_ALIGN_LEFT)
-            draw.SimpleText("Model: " .. charModel, "ax.fonts.developer", x, y + 16 * 10, green, TEXT_ALIGN_LEFT)
-            draw.SimpleText(inventoryText, "ax.fonts.developer", x, y + 16 * 11, green, TEXT_ALIGN_LEFT)
+            draw.SimpleText("[CHARACTER INFO]", "parallax.developer", x, y + 16 * 7, green, TEXT_ALIGN_LEFT)
+            draw.SimpleText("Character: " .. tostring(character), "parallax.developer", x, y + 16 * 8, green, TEXT_ALIGN_LEFT)
+            draw.SimpleText("Name: " .. name, "parallax.developer", x, y + 16 * 9, green, TEXT_ALIGN_LEFT)
+            draw.SimpleText("Model: " .. charModel, "parallax.developer", x, y + 16 * 10, green, TEXT_ALIGN_LEFT)
+            draw.SimpleText(inventoryText, "parallax.developer", x, y + 16 * 11, green, TEXT_ALIGN_LEFT)
         end
     end
 
@@ -242,9 +242,9 @@ function GM:HUDPaint()
         surface.SetDrawColor(backgroundColor)
         surface.DrawRect(x - padding, y - padding, 410 + padding * 2, 45 + padding * 2)
 
-        draw.SimpleText("[PREVIEW MODE]", "ax.fonts.developer", x, y, orange, TEXT_ALIGN_LEFT)
-        draw.SimpleText("Warning! Anything you witness is subject to change.", "ax.fonts.developer", x, y + 16, red, TEXT_ALIGN_LEFT)
-        draw.SimpleText("This is not the final product.", "ax.fonts.developer", x, y + 16 * 2, red, TEXT_ALIGN_LEFT)
+        draw.SimpleText("[PREVIEW MODE]", "parallax.developer", x, y, orange, TEXT_ALIGN_LEFT)
+        draw.SimpleText("Warning! Anything you witness is subject to change.", "parallax.developer", x, y + 16, red, TEXT_ALIGN_LEFT)
+        draw.SimpleText("This is not the final product.", "parallax.developer", x, y + 16 * 2, red, TEXT_ALIGN_LEFT)
     end
 
     shouldDraw = hook.Run("ShouldDrawCrosshair")
@@ -276,7 +276,7 @@ function GM:HUDPaint()
         local clip = activeWeapon:Clip1()
         local ammoText = clip .. " / " .. ammo
 
-        draw.SimpleTextOutlined(ammoText, "ax.fonts.bold", scrW - 16, scrH - 16, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM, 1, color_black)
+        draw.SimpleTextOutlined(ammoText, "parallax.bold", scrW - 16, scrH - 16, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM, 1, color_black)
     end
 
     hook.Run("PostHUDPaint")
@@ -317,49 +317,49 @@ function GM:LoadFonts()
     local scale20 = ScreenScale(20)
     local scale24 = ScreenScale(24)
 
-    surface.CreateFont("ax.fonts.tiny", {
+    surface.CreateFont("parallax.tiny", {
         font = "GorDIN Regular",
         size = scale4,
         weight = 500,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.tiny.bold", {
+    surface.CreateFont("parallax.tiny.bold", {
         font = "GorDIN Bold",
         size = scale4,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.small", {
+    surface.CreateFont("parallax.small", {
         font = "GorDIN Regular",
         size = scale6,
         weight = 500,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.small.bold", {
+    surface.CreateFont("parallax.small.bold", {
         font = "GorDIN Bold",
         size = scale6,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts", {
+    surface.CreateFont("parallax", {
         font = "GorDIN Regular",
         size = scale8,
         weight = 500,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.bold", {
+    surface.CreateFont("parallax.bold", {
         font = "GorDIN Bold",
         size = scale8,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.italic", {
+    surface.CreateFont("parallax.italic", {
         font = "GorDIN Regular",
         size = ScreenScale(8),
         weight = 500,
@@ -367,7 +367,7 @@ function GM:LoadFonts()
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.italic.bold", {
+    surface.CreateFont("parallax.italic.bold", {
         font = "GorDIN Bold",
         size = scale8,
         weight = 700,
@@ -375,21 +375,21 @@ function GM:LoadFonts()
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.large", {
+    surface.CreateFont("parallax.large", {
         font = "GorDIN Regular",
         size = ScreenScale(10),
         weight = 500,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.large.bold", {
+    surface.CreateFont("parallax.large.bold", {
         font = "GorDIN Bold",
         size = scale10,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.large.italic", {
+    surface.CreateFont("parallax.large.italic", {
         font = "GorDIN Regular",
         size = ScreenScale(10),
         weight = 500,
@@ -397,7 +397,7 @@ function GM:LoadFonts()
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.large.italic.bold", {
+    surface.CreateFont("parallax.large.italic.bold", {
         font = "GorDIN Bold",
         size = scale10,
         weight = 700,
@@ -405,21 +405,21 @@ function GM:LoadFonts()
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.extralarge", {
+    surface.CreateFont("parallax.huge", {
         font = "GorDIN Regular",
         size = scale12,
         weight = 500,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.extralarge.bold", {
+    surface.CreateFont("parallax.huge.bold", {
         font = "GorDIN Bold",
         size = scale12,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.extralarge.italic", {
+    surface.CreateFont("parallax.huge.italic", {
         font = "GorDIN",
         size = scale12,
         weight = 500,
@@ -427,7 +427,7 @@ function GM:LoadFonts()
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.extralarge.italic.bold", {
+    surface.CreateFont("parallax.huge.italic.bold", {
         font = "GorDIN Bold",
         size = scale12,
         weight = 700,
@@ -435,84 +435,84 @@ function GM:LoadFonts()
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.button.large", {
+    surface.CreateFont("parallax.button.large", {
         font = "GorDIN SemiBold",
         size = scale20,
         weight = 600,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.button.large.hover", {
+    surface.CreateFont("parallax.button.large.hover", {
         font = "GorDIN Bold",
         size = scale20,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.button", {
+    surface.CreateFont("parallax.button", {
         font = "GorDIN SemiBold",
         size = scale16,
         weight = 600,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.button.hover", {
+    surface.CreateFont("parallax.button.hover", {
         font = "GorDIN Bold",
         size = scale16,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.button.small", {
+    surface.CreateFont("parallax.button.small", {
         font = "GorDIN SemiBold",
         size = scale12,
         weight = 600,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.button.small.hover", {
+    surface.CreateFont("parallax.button.small.hover", {
         font = "GorDIN Bold",
         size = scale12,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.button.tiny", {
+    surface.CreateFont("parallax.button.tiny", {
         font = "GorDIN SemiBold",
         size = scale10,
         weight = 600,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.button.tiny.hover", {
+    surface.CreateFont("parallax.button.tiny.hover", {
         font = "GorDIN Bold",
         size = scale10,
         weight = 700,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.title", {
+    surface.CreateFont("parallax.title", {
         font = "GorDIN Bold",
         size = scale24,
         weight = 700,
         antialias = true,
     })
 
-    surface.CreateFont("ax.fonts.subtitle", {
+    surface.CreateFont("parallax.subtitle", {
         font = "GorDIN SemiBold",
         size = scale16,
         weight = 600,
         antialias = true,
     })
 
-    surface.CreateFont("ax.fonts.developer", {
+    surface.CreateFont("parallax.developer", {
         font = "Courier New",
         size = 16,
         weight = 500,
         antialias = true
     })
 
-    surface.CreateFont("ax.fonts.chat", {
+    surface.CreateFont("parallax.chat", {
         font = "GorDIN Regular",
         size = ScreenScale(8) * ax.option:Get("chat.size.font", 1),
         weight = 500,
@@ -667,17 +667,17 @@ function GM:PopulateHelpCategories(categories)
             local key = button:Add("ax.text")
             key:Dock(LEFT)
             key:DockMargin(ScreenScale(8), 0, 0, 0)
-            key:SetFont("ax.fonts.button.hover")
+            key:SetFont("parallax.button.hover")
             key:SetText(k)
 
             local seperator = button:Add("ax.text")
             seperator:Dock(LEFT)
-            seperator:SetFont("ax.fonts.button")
+            seperator:SetFont("parallax.button")
             seperator:SetText(" - ")
 
             local description = button:Add("ax.text")
             description:Dock(LEFT)
-            description:SetFont("ax.fonts.button")
+            description:SetFont("parallax.button")
             description:SetText(v.description)
 
             local function Think(this)

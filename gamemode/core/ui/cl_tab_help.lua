@@ -10,7 +10,7 @@ function PANEL:Init()
 
     local title = self:Add("ax.text")
     title:Dock(TOP)
-    title:SetFont("ax.fonts.title")
+    title:SetFont("parallax.title")
     title:SetText("HELP")
 
     self.buttons = self:Add("DHorizontalScroller")

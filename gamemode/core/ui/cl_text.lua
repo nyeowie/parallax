@@ -3,7 +3,7 @@ DEFINE_BASECLASS("DLabel")
 local PANEL = {}
 
 function PANEL:Init()
-    self:SetFont("ax.fonts")
+    self:SetFont("parallax")
     self:SetTextColor(color_white)
 end
 
