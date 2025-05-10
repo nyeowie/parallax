@@ -286,6 +286,7 @@ local elements = {
     ["CHUDQuickInfo"] = true,
     ["CHudAmmo"] = true,
     ["CHudBattery"] = true,
+    ["CHudCrosshair"] = true,
     ["CHudDamageIndicator"] = true,
     ["CHudGeiger"] = true,
     ["CHudHealth"] = true,
@@ -295,8 +296,7 @@ local elements = {
     ["CHudSquadStatus"] = true,
     ["CHudSuitPower"] = true,
     ["CHudTrain"] = true,
-    ["CHudVehicle"] = true,
-    ["CHudCrosshair"] = true,
+    ["CHudVehicle"] = true
 }
 
 function GM:HUDShouldDraw(name)
