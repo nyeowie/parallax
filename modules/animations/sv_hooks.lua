@@ -22,7 +22,7 @@ function MODULE:PostEntitySetModel(ent, model)
         client.axAnimations = {}
     end
 
-    ax.net:Start(nil, "animations.update", client, client.axAnimations)
+    ax.net:Start(nil, "animations.update", client, client.axAnimations, holdType)
 end
 
 function MODULE:PlayerSpawn(client)
@@ -43,7 +43,7 @@ function MODULE:PlayerSpawn(client)
         client.axAnimations = {}
     end
 
-    ax.net:Start(nil, "animations.update", client, client.axAnimations)
+    ax.net:Start(nil, "animations.update", client, client.axAnimations, holdType)
 end
 
 function MODULE:PlayerSwitchWeapon(client, oldWeapon, newWeapon)
@@ -62,5 +62,5 @@ function MODULE:PlayerSwitchWeapon(client, oldWeapon, newWeapon)
         client.axAnimations = {}
     end
 
-    ax.net:Start(nil, "animations.update", client, client.axAnimations)
+    ax.net:Start(nil, "animations.update", client, client.axAnimations, holdType)
 end

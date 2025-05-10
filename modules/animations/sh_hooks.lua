@@ -263,11 +263,21 @@ function MODULE:CalcMainActivity(client, velocity)
     local eyeAngles = client:EyeAngles()
     local aimVector = client:GetAimVector()
     local aimVectorAng = aimVector:Angle()
+    local renderAng = client:GetRenderAngles()
 
-    client:SetPoseParameter("move_yaw", normalizeAngle(vectorAngle(velocity)[2] - eyeAngles[2]))
+    client:SetPoseParameter("move_yaw", normalizeAngle(vectorAngle(velocity).y - eyeAngles.y))
 
-    client:SetPoseParameter("aim_yaw", normalizeAngle(aimVectorAng.y - eyeAngles[2]))
-    client:SetPoseParameter("aim_pitch", normalizeAngle(aimVectorAng.p - eyeAngles[1]))
+    local aimYaw = normalizeAngle(renderAng.y - eyeAngles.y)
+    local aimPitch = normalizeAngle(renderAng.p - eyeAngles.p)
+
+    client:SetPoseParameter("aim_yaw", aimYaw)
+    client:SetPoseParameter("aim_pitch", aimPitch)
+
+    local headYaw = normalizeAngle(renderAng.y - aimVectorAng.y)
+    local headPitch = normalizeAngle(renderAng.p - aimVectorAng.p)
+
+    client:SetPoseParameter("head_yaw", headYaw)
+    client:SetPoseParameter("head_pitch", headPitch)
 
     self:HandlePlayerLanding(client, velocity, clientTable.m_bWasOnGround)
 
@@ -314,6 +324,16 @@ IdleActivityTranslate[ACT_MP_JUMP] = ACT_HL2MP_JUMP_SLAM
 IdleActivityTranslate[ACT_MP_SWIM] = IdleActivity + 9
 IdleActivityTranslate[ACT_LAND] = ACT_LAND
 
+local PlayerPassiveTranslator = {
+    ["ar2"] = {
+        [ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE_PASSIVE,
+        [ACT_MP_WALK] = ACT_HL2MP_WALK_PASSIVE,
+        [ACT_MP_RUN] = ACT_HL2MP_RUN_PASSIVE,
+        [ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_PASSIVE,
+        [ACT_MP_CROUCHWALK] = ACT_HL2MP_WALK_CROUCH_PASSIVE,
+    }
+}
+
 function MODULE:TranslateActivity(client, act)
     local clientTable = client:GetTable()
     local oldAct = client.axLastAct or -1
@@ -325,6 +345,14 @@ function MODULE:TranslateActivity(client, act)
 
     local class = ax.animations:GetModelClass(client:GetModel())
     if ( !class or class == "player" ) then
+        local holdType = clientTable.axHoldType
+        if ( holdType and !client:IsWeaponRaised() ) then
+            local animTable = PlayerPassiveTranslator[holdType]
+            if ( animTable and animTable[act] ) then
+                newAct = animTable[act]
+            end
+        end
+
         return newAct
     end
 

@@ -1,7 +1,8 @@
-ax.net:Hook("animations.update", function(client, data)
-    if ( !IsValid(client) or !istable(data) ) then return end
+ax.net:Hook("animations.update", function(client, animations, holdType)
+    if ( !IsValid(client) ) then return end
 
-    client.axAnimations = data
+    client.axAnimations = animations
+    client.axHoldType = holdType
     client.axLastAct = -1
 
     -- ew...
