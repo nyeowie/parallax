@@ -22,13 +22,14 @@ function ax.chat:Register(uniqueID, chatData)
         end
     end
 
-    if ( chatData.Prefixes ) then
+    if ( chatData.Prefixes and #chatData.Prefixes > 0 ) then
         ax.command:Register(uniqueID, {
             Description = chatData.Description or "",
             Prefixes = chatData.Prefixes,
+            Arguments = {
+                ax.types.text
+            },
             Callback = function(this, client, arguments)
-                local text = table.concat(arguments, " ")
-
                 if ( !isstring(text) or #text < 1 ) then
                     client:Notify("You must provide a message to send!")
                     return false
