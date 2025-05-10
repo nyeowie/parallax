@@ -287,7 +287,7 @@ ax.config:Register("hands.max.force", {
 
 ax.config:Register("hands.max.throw", {
     Name = "config.hands.max.throw",
-    Description = "config.hands.max.thrax.help",
+    Description = "config.hands.max.throw.help",
     Category = "config.hands",
     Type = ax.types.number,
     Default = 150,

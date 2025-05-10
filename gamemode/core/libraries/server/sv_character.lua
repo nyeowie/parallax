@@ -217,14 +217,14 @@ function ax.character:CacheAll(client)
 
     if ( result ) then
         for _, row in ipairs(result) do
-            local id = tonumber(rax.id)
+            local id = tonumber(row.id)
             if ( !id ) then
-                ErrorNoHalt("Failed to convert character ID " .. rax.id .. " to number for player " .. tostring(client) .. "\n")
+                ErrorNoHalt("Failed to convert character ID " .. row.id .. " to number for player " .. tostring(client) .. "\n")
                 continue
             end
 
             -- Make sure we are not loading a character from a different schema
-            if ( rax.schema != SCHEMA.Folder ) then
+            if ( row.schema != SCHEMA.Folder ) then
                 continue
             end
 

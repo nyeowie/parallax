@@ -135,7 +135,7 @@ function PANEL:AddSetting(settingData)
                 value = ax.option:Get(settingData.UniqueID)
 
                 label:SetText(value and enabled or disabled, true)
-            end):SetIcon("icon16/arrax_refresh.png")
+            end):SetIcon("icon16/arrow_refresh.png")
             menu:Open()
         end
     elseif ( settingData.Type == ax.types.number ) then
@@ -219,7 +219,7 @@ function PANEL:AddSetting(settingData)
                 if ( isfunction(settingData.OnReset) ) then
                     settingData:OnReset(oldValue, value)
                 end
-            end):SetIcon("icon16/arrax_refresh.png")
+            end):SetIcon("icon16/arrow_refresh.png")
             menu:Open()
         end
     elseif ( settingData.Type == ax.types.array ) then
@@ -271,7 +271,7 @@ function PANEL:AddSetting(settingData)
                 value = ax.option:Get(settingData.UniqueID)
 
                 label:SetText("< " .. (options and options[value] or "Unknown") .. " >", true)
-            end):SetIcon("icon16/arrax_refresh.png")
+            end):SetIcon("icon16/arrow_refresh.png")
             menu:AddSpacer()
             for k2, v2 in SortedPairs(options) do
                 menu:AddOption(v2, function()
@@ -345,7 +345,7 @@ function PANEL:AddSetting(settingData)
                 value = ax.option:Get(settingData.UniqueID)
 
                 color.color = value
-            end):SetIcon("icon16/arrax_refresh.png")
+            end):SetIcon("icon16/arrow_refresh.png")
             menu:Open()
         end
     elseif ( configData.Type == ax.types.string ) then
@@ -372,7 +372,7 @@ function PANEL:AddSetting(settingData)
                 value = ax.option:Get(settingData.UniqueID)
 
                 text:SetText(value)
-            end):SetIcon("icon16/arrax_refresh.png")
+            end):SetIcon("icon16/arrow_refresh.png")
             menu:Open()
         end
     end

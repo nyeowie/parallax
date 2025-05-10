@@ -149,8 +149,8 @@ function ax.item:Cache(characterID)
     if ( !items ) then return false end
 
     for _, row in pairs(items) do
-        local itemID = tonumber(rax.id)
-        local uniqueID = rax.unique_id
+        local itemID = tonumber(row.id)
+        local uniqueID = row.unique_id
 
         if ( self.stored[uniqueID] ) then
             local item = self:CreateObject(row)

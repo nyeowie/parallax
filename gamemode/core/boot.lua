@@ -4,8 +4,7 @@ GM.Description = "Parallax is a modular roleplay framework for Garry's Mod, buil
 GM.Version = "Alpha 0.1.0"
 
 ax.util:Print("Framework Initializing...")
-ax.util:LoadFolder("external")
-ax.util:LoadFolder("external/paint")
+ax.util:LoadFolder("libraries/external")
 ax.util:LoadFolder("libraries/client")
 ax.util:LoadFolder("libraries/shared")
 ax.util:LoadFolder("libraries/server")
