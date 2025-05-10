@@ -81,6 +81,14 @@ function ax.class:Register(classData)
     CLASS.UniqueID = CLASS.UniqueID or uniqueID
 
     self.stored[CLASS.UniqueID] = CLASS
+
+    for k, v in ipairs(self.instances) do
+        if ( v.UniqueID == CLASS.UniqueID ) then
+            table.remove(self.instances, k)
+            break
+        end
+    end
+
     self.instances[#self.instances + 1] = CLASS
 
     CLASS.ID = #self.instances

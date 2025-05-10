@@ -22,6 +22,7 @@ local DEFAULT_MODELS = {
 ax.faction = {}
 ax.faction.stored = {}
 ax.faction.instances = {}
+
 ax.faction.meta = {
     GetName = function(self)
         return self.Name or "Unknown Faction"
@@ -95,6 +96,14 @@ function ax.faction:Register(factionData)
     FACTION.UniqueID = FACTION.UniqueID or uniqueID
 
     self.stored[FACTION.UniqueID] = FACTION
+
+    for k, v in ipairs(self.instances) do
+        if ( v.UniqueID == FACTION.UniqueID ) then
+            table.remove(self.instances, k)
+            break
+        end
+    end
+
     self.instances[#self.instances + 1] = FACTION
 
     FACTION.ID = #self.instances
