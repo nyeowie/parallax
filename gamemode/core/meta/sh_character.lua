@@ -86,6 +86,26 @@ function CHAR:HasFlag(flag)
     return false
 end
 
+function CHAR:GetFactionData()
+    local faction = self:GetFaction()
+    if ( !faction ) then return end
+
+    local factionData = ax.faction:Get(faction)
+    if ( !factionData ) then return end
+
+    return factionData
+end
+
+function CHAR:GetClassData()
+    local class = self:GetClass()
+    if ( !class ) then return end
+
+    local classData = ax.class:Get(class)
+    if ( !classData ) then return end
+
+    return classData
+end
+
 if ( SERVER ) then
     function CHAR:GiveFlag(flag)
         if ( !ax.flag:Get(flag) ) then return end
