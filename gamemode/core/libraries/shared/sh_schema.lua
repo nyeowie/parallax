@@ -17,7 +17,7 @@ function ax.schema:Initialize()
     SCHEMA = {}
 
     local folder = engine.ActiveGamemode()
-    local schema = folder .. "/schema/sh_schema.lua"
+    local schema = folder .. "/schema/boot.lua"
 
     file.CreateDir("parallax/" .. folder)
 
@@ -42,7 +42,18 @@ function ax.schema:Initialize()
     end
 
     ax.hooks:Register("SCHEMA")
+    ax.util:LoadFolder(folder .. "/schema/libraries/external", true)
+    ax.util:LoadFolder(folder .. "/schema/libraries/client", true)
+    ax.util:LoadFolder(folder .. "/schema/libraries/shared", true)
+    ax.util:LoadFolder(folder .. "/schema/libraries/server", true)
     ax.util:LoadFolder(folder .. "/schema/factions", true)
+    ax.util:LoadFolder(folder .. "/schema/classes", true)
+    ax.util:LoadFolder(folder .. "/schema/system", true)
+    ax.util:LoadFolder(folder .. "/schema/meta", true)
+    ax.util:LoadFolder(folder .. "/schema/ui", true)
+    ax.util:LoadFolder(folder .. "/schema/hooks", true)
+    ax.util:LoadFolder(folder .. "/schema/net", true)
+    ax.util:LoadFolder(folder .. "/schema/languages", true)
     ax.item:LoadFolder(folder .. "/schema/items")
     ax.util:LoadFolder(folder .. "/schema/config", true)
 
@@ -64,7 +75,7 @@ function ax.schema:Initialize()
     end
 
     -- Load the sh_schema.lua file after we load all necessary files
-    ax.util:LoadFile(schema)
+    ax.util:LoadFile(schema, "shared")
 
     -- Load the modules after the schema file is loaded
     ax.module:LoadFolder(folder .. "/modules")

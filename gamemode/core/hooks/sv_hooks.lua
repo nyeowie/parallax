@@ -121,7 +121,7 @@ end
 
 function GM:Initialize()
     ax.module:LoadFolder("parallax/modules")
-    ax.item:LoadFolder("parallax/items")
+    ax.item:LoadFolder("parallax/core/items")
     ax.schema:Initialize()
 
     if ( game.IsDedicated() ) then
@@ -153,7 +153,7 @@ end
 
 function GM:OnReloaded()
     ax.module:LoadFolder("parallax/modules")
-    ax.item:LoadFolder("parallax/items")
+    ax.item:LoadFolder("parallax/core/items")
     ax.schema:Initialize()
     ax.config:Load()
 end
