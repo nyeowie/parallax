@@ -440,17 +440,17 @@ end
 -- @param path string Path to the entity directory.
 -- @param clientOnly boolean Whether inclusion should be client-only.
 -- @return boolean True if any file was included successfully.
-function ow.util:LoadEntityFile(path, clientOnly)
+function ax.util:LoadEntityFile(path, clientOnly)
     if ( SERVER and file.Exists(path .. "init.lua", "LUA") ) or ( CLIENT and file.Exists(path .. "cl_init.lua", "LUA") ) then
-        ow.util:Include(path .. "init.lua", clientOnly and "client" or "server")
+        ax.util:Include(path .. "init.lua", clientOnly and "client" or "server")
 
         if ( file.Exists(path .. "cl_init.lua", "LUA") ) then
-            ow.util:Include(path .. "cl_init.lua", "client")
+            ax.util:Include(path .. "cl_init.lua", "client")
         end
 
         return true
     elseif ( file.Exists(path .. "shared.lua", "LUA") ) then
-        ow.util:Include(path .. "shared.lua", "shared")
+        ax.util:Include(path .. "shared.lua", "shared")
         return true
     end
 
@@ -464,7 +464,7 @@ end
 -- @param registerFn function Function to register the entity.
 -- @param default table? Default values for the global table.
 -- @param clientOnly boolean? Whether registration should only happen on client.
-function ow.util:LoadEntityFolder(basePath, folder, globalKey, registerFn, default, clientOnly)
+function ax.util:LoadEntityFolder(basePath, folder, globalKey, registerFn, default, clientOnly)
     local fullPath = basePath .. "/" .. folder .. "/"
     local files, folders = file.Find(fullPath .. "*", "LUA")
     default = default or {}
@@ -503,7 +503,7 @@ end
 --- Loads all entities, weapons, and effects from a module or schema directory.
 -- @param path string Path to module or schema folder.
 -- @realm shared
-function ow.util:LoadEntities(path)
+function ax.util:LoadEntities(path)
     self:LoadEntityFolder(path, "entities", "ENT", scripted_ents.Register, {
         Type = "anim",
         Base = "base_gmodentity",
