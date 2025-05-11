@@ -162,7 +162,3 @@ if ( CLIENT ) then
         return self:Get() / max
     end
 end
-
-ax.util:LoadFile("cl_hooks.lua")
-ax.util:LoadFile("sh_hooks.lua")
-ax.util:LoadFile("sv_hooks.lua")

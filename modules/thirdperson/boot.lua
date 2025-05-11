@@ -111,5 +111,3 @@ local meta = FindMetaTable("Player")
 function meta:InThirdperson()
     return SERVER and ax.option:Get(self, "thirdperson", false) or ax.option:Get("thirdperson", false)
 end
-
-ax.util:LoadFile("cl_hooks.lua")

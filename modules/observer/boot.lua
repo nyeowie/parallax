@@ -13,6 +13,3 @@ CAMI.RegisterPrivilege({
     Name = "Parallax - Observer",
     MinAccess = "admin"
 })
-
-ax.util:LoadFile("sh_hooks.lua")
-ax.util:LoadFile("sv_hooks.lua")

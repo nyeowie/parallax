@@ -316,11 +316,6 @@ ax.animations:SetModelClass("models/vortigaunt_blue.mdl", "vortigaunt")
 ax.animations:SetModelClass("models/vortigaunt_doctor.mdl", "vortigaunt")
 ax.animations:SetModelClass("models/vortigaunt_slave.mdl", "vortigaunt")
 
-ax.util:LoadFile("cl_module.lua")
-
-ax.util:LoadFile("sh_hooks.lua")
-ax.util:LoadFile("sv_hooks.lua")
-
 local playerMeta = FindMetaTable("Player")
 if ( SERVER ) then
     function playerMeta:LeaveSequence()

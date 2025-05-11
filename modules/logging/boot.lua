@@ -34,9 +34,4 @@ end
 
 ax.color:Register("log.message", Color(250, 200, 25))
 
-ax.util:LoadFile("cl_module.lua")
-ax.util:LoadFile("sv_module.lua")
-
-ax.util:LoadFile("sv_hooks.lua")
-
 ax.log = MODULE

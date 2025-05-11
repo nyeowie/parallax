@@ -40,10 +40,10 @@ function ax.module:LoadFolder(path)
 
     local files, folders = file.Find(path .. "/*", "LUA")
     for k, v in ipairs(folders) do
-        if ( file.Exists(path .. "/" .. v .. "/sh_module.lua", "LUA") ) then
+        if ( file.Exists(path .. "/" .. v .. "/boot.lua", "LUA") ) then
             MODULE = { UniqueID = v }
                 hook.Run("PreInitializeModule", MODULE)
-                ax.util:LoadFile(path .. "/" .. v .. "/sh_module.lua", "shared")
+                ax.util:LoadFile(path .. "/" .. v .. "/boot.lua", "shared")
                 ax.util:LoadFolder(path .. "/" .. v .. "/ui", true)
                 ax.util:LoadFolder(path .. "/" .. v .. "/libraries/external", true)
                 ax.util:LoadFolder(path .. "/" .. v .. "/libraries/client", true)
