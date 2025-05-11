@@ -436,6 +436,89 @@ function ax.util:QueueSounds(ent, sounds, startDelay, gap, volume, pitch)
     return currentDelay
 end
 
+--- Includes Lua files for a defined entity folder path.
+-- @param path string Path to the entity directory.
+-- @param clientOnly boolean Whether inclusion should be client-only.
+-- @return boolean True if any file was included successfully.
+function ow.util:LoadEntityFile(path, clientOnly)
+    if ( SERVER and file.Exists(path .. "init.lua", "LUA") ) or ( CLIENT and file.Exists(path .. "cl_init.lua", "LUA") ) then
+        ow.util:Include(path .. "init.lua", clientOnly and "client" or "server")
+
+        if ( file.Exists(path .. "cl_init.lua", "LUA") ) then
+            ow.util:Include(path .. "cl_init.lua", "client")
+        end
+
+        return true
+    elseif ( file.Exists(path .. "shared.lua", "LUA") ) then
+        ow.util:Include(path .. "shared.lua", "shared")
+        return true
+    end
+
+    return false
+end
+
+--- Scans a folder and registers all contained entity files.
+-- @param basePath string Base directory path.
+-- @param folder string Subfolder to search (e.g., "entities").
+-- @param globalKey string Global variable name to assign during load (e.g., "ENT").
+-- @param registerFn function Function to register the entity.
+-- @param default table? Default values for the global table.
+-- @param clientOnly boolean? Whether registration should only happen on client.
+function ow.util:LoadEntityFolder(basePath, folder, globalKey, registerFn, default, clientOnly)
+    local fullPath = basePath .. "/" .. folder .. "/"
+    local files, folders = file.Find(fullPath .. "*", "LUA")
+    default = default or {}
+
+    for _, dir in ipairs(folders) do
+        local subPath = fullPath .. dir .. "/"
+
+        _G[globalKey] = table.Copy(default)
+        _G[globalKey].ClassName = dir
+
+        if ( self:LoadEntityFile(subPath, clientOnly) ) then
+            if ( !clientOnly or CLIENT ) then
+                registerFn(_G[globalKey], dir)
+            end
+        end
+
+        _G[globalKey] = nil
+    end
+
+    for _, fileName in ipairs(files) do
+        local class = string.StripExtension(fileName)
+
+        _G[globalKey] = table.Copy(default)
+        _G[globalKey].ClassName = class
+
+        self:Include(fullPath .. fileName, clientOnly and "client" or "shared")
+
+        if ( !clientOnly or CLIENT ) then
+            registerFn(_G[globalKey], class)
+        end
+
+        _G[globalKey] = nil
+    end
+end
+
+--- Loads all entities, weapons, and effects from a module or schema directory.
+-- @param path string Path to module or schema folder.
+-- @realm shared
+function ow.util:LoadEntities(path)
+    self:LoadEntityFolder(path, "entities", "ENT", scripted_ents.Register, {
+        Type = "anim",
+        Base = "base_gmodentity",
+        Spawnable = true
+    })
+
+    self:LoadEntityFolder(path, "weapons", "SWEP", weapons.Register, {
+        Primary = {},
+        Secondary = {},
+        Base = "weapon_base"
+    })
+
+    self:LoadEntityFolder(path, "effects", "EFFECT", effects and effects.Register, nil, true)
+end
+
 if ( CLIENT ) then
     --- Returns the given text's width.
     -- @realm client
