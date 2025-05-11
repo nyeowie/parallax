@@ -442,15 +442,15 @@ end
 -- @return boolean True if any file was included successfully.
 function ax.util:LoadEntityFile(path, clientOnly)
     if ( SERVER and file.Exists(path .. "init.lua", "LUA") ) or ( CLIENT and file.Exists(path .. "cl_init.lua", "LUA") ) then
-        ax.util:Include(path .. "init.lua", clientOnly and "client" or "server")
+        ax.util:LoadFile(path .. "init.lua", clientOnly and "client" or "server")
 
         if ( file.Exists(path .. "cl_init.lua", "LUA") ) then
-            ax.util:Include(path .. "cl_init.lua", "client")
+            ax.util:LoadFile(path .. "cl_init.lua", "client")
         end
 
         return true
     elseif ( file.Exists(path .. "shared.lua", "LUA") ) then
-        ax.util:Include(path .. "shared.lua", "shared")
+        ax.util:LoadFile(path .. "shared.lua", "shared")
         return true
     end
 
@@ -490,7 +490,7 @@ function ax.util:LoadEntityFolder(basePath, folder, globalKey, registerFn, defau
         _G[globalKey] = table.Copy(default)
         _G[globalKey].ClassName = class
 
-        self:Include(fullPath .. fileName, clientOnly and "client" or "shared")
+        self:LoadFile(fullPath .. fileName, clientOnly and "client" or "shared")
 
         if ( !clientOnly or CLIENT ) then
             registerFn(_G[globalKey], class)
