@@ -128,9 +128,9 @@ ax.config:Register("jump.power", {
     end
 })
 
-ax.config:Register("inventory.maxweight", {
-    Name = "config.inventory.maxweight",
-    Description = "config.inventory.maxweight.help",
+ax.config:Register("inventory.max.weight", {
+    Name = "config.inventory.max.weight",
+    Description = "config.inventory.max.weight.help",
     SubCategory = "config.inventory",
     Type = ax.types.number,
     Default = 20,
@@ -310,8 +310,8 @@ ax.config:Register("hands.range", {
 ax.config:Register("weapon.raise.time", {
     Name = "config.weapon.raise.time",
     Description = "config.weapon.raise.time.help",
+    SubCategory = "config.weapon",
     Type = ax.types.number,
-    SubCategory = "config.weapon.raise",
     Default = 1,
     Min = 0,
     Max = 5,
@@ -321,7 +321,7 @@ ax.config:Register("weapon.raise.time", {
 ax.config:Register("weapon.raise.alwaysraised", {
     Name = "config.weapon.raise.alwaysraised",
     Description = "config.weapon.raise.alwaysraised.help",
-    SubCategory = "config.weapon.raise",
+    SubCategory = "config.weapon",
     Type = ax.types.bool,
     Default = false
 })
@@ -329,6 +329,7 @@ ax.config:Register("weapon.raise.alwaysraised", {
 ax.config:Register("debug.networking", {
     Name = "config.debug.networking",
     Description = "config.debug.networking.help",
+    SubCategory = "config.debug",
     Type = ax.types.bool,
     Default = false
 })
@@ -336,6 +337,7 @@ ax.config:Register("debug.networking", {
 ax.config:Register("debug.developer", {
     Name = "config.debug.developer",
     Description = "config.debug.developer.help",
+    SubCategory = "config.debug",
     Type = ax.types.bool,
     Default = false
 })
@@ -343,6 +345,7 @@ ax.config:Register("debug.developer", {
 ax.config:Register("debug.preview", {
     Name = "config.debug.preview",
     Description = "config.debug.preview.help",
+    SubCategory = "config.debug",
     Type = ax.types.bool,
     Default = false
 })

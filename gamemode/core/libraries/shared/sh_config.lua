@@ -2,7 +2,7 @@
 -- @module ax.config
 
 ax.config = ax.config or {}
-ax.config.stored = ax.config.stored or {}
+ax.config.stored = {}
 
 --- Gets the current value of the specified configuration.
 -- @realm shared
@@ -148,11 +148,11 @@ function ax.config:Register(key, data)
         end
     end
 
-    if ( !isstring(data.Category) ) then
+    if ( data.Category == nil ) then
         data.Category = "misc"
     end
 
-    if ( isstring(data.SubCategory) ) then
+    if ( data.SubCategory == nil ) then
         data.SubCategory = "other"
     end
 

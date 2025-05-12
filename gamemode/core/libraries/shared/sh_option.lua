@@ -1,7 +1,7 @@
 --- Options library
 -- @module ax.option
 
-ax.option = {}
+ax.option = ax.option or {}
 ax.option.stored = {}
 
 function ax.option:SetDefault(key, default)
