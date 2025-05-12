@@ -53,7 +53,9 @@ if ( SERVER ) then
             net.Send(recipients)
         end
 
-        ax.util:Print("[net] Sent '" .. name .. "' to " .. (SERVER and #recipients .. " players" or "server"))
+        if ( ax.config:Get("debug.networking") ) then
+            ax.util:Print("[Networking] Sent '" .. name .. "' to " .. (SERVER and #recipients .. " players" or "server"))
+        end
     end
 else
     function ax.net:Start(name, ...)
@@ -74,13 +76,13 @@ net.Receive("ax.net.msg", function(len, ply)
 
     local ok, decoded = pcall(sfs.decode, raw)
     if ( !ok or type(decoded) != "table" ) then
-        ErrorNoHalt("[net] Decode failed for '" .. name .. "'\n")
+        ErrorNoHalt("[Networking] Decode failed for '" .. name .. "'\n")
         return
     end
 
     local callback = ax.net.stored[name]
     if ( !isfunction(callback) ) then
-        ErrorNoHalt("[net] No handler for '" .. name .. "'\n")
+        ErrorNoHalt("[Networking] No handler for '" .. name .. "'\n")
         return
     end
 
@@ -90,7 +92,9 @@ net.Receive("ax.net.msg", function(len, ply)
         callback(unpack(decoded))
     end
 
-    ax.util:Print("[net] Received '" .. name .. "' from " .. (SERVER and ply:Nick() or "server"))
+    if ( ax.config:Get("debug.networking") ) then
+        ax.util:Print("[Networking] Received '" .. name .. "' from " .. (SERVER and ply:Nick() or "server"))
+    end
 end)
 
 --[[

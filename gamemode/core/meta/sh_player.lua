@@ -142,6 +142,10 @@ if ( CLIENT ) then
     end
 end
 
-function PLAYER:IsParallaxDeveloper() -- Official Parallax Developers
-    return self:SteamID64() == "76561197963057641"
+local developers = {
+    ["76561197963057641"] = true
+}
+
+function PLAYER:IsParallaxDeveloper()
+    return developers[self:SteamID64()] or false
 end

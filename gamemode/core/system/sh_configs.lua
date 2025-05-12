@@ -325,3 +325,24 @@ ax.config:Register("weapon.raise.alwaysraised", {
     Type = ax.types.bool,
     Default = false
 })
+
+ax.config:Register("debug.networking", {
+    Name = "config.debug.networking",
+    Description = "config.debug.networking.help",
+    Type = ax.types.bool,
+    Default = false
+})
+
+ax.config:Register("debug.developer", {
+    Name = "config.debug.developer",
+    Description = "config.debug.developer.help",
+    Type = ax.types.bool,
+    Default = false
+})
+
+ax.config:Register("debug.preview", {
+    Name = "config.debug.preview",
+    Description = "config.debug.preview.help",
+    Type = ax.types.bool,
+    Default = false
+})

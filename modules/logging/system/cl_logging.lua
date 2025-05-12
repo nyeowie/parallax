@@ -3,9 +3,9 @@ local MODULE = MODULE
 ax.net:Hook("logging.send", function(payload)
     if ( !payload ) then return end
 
-    ax.util:Print("[log] ", unpack(payload))
+    ax.util:Print("[Logging] ", unpack(payload))
 end)
 
 function MODULE:Send(...)
-    ax.util:Print("[log] ", ...)
+    ax.util:Print("[Logging] ", ...)
 end

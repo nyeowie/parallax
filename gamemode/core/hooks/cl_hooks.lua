@@ -573,7 +573,7 @@ function GM:ShouldDrawAmmoBox()
 end
 
 function GM:ShouldDrawDebugHUD()
-    if ( !ax.convars:Get("ax_debug"):GetBool() ) then return false end
+    if ( !ax.config:Get("debug.developer") ) then return false end
     if ( IsValid(ax.gui.mainmenu) ) then return false end
     if ( IsValid(ax.gui.tab) ) then return false end
 
@@ -581,7 +581,7 @@ function GM:ShouldDrawDebugHUD()
 end
 
 function GM:ShouldDrawPreviewHUD()
-    if ( !ax.convars:Get("ax_preview"):GetBool() ) then return false end
+    if ( !ax.config:Get("debug.preview") ) then return false end
     if ( IsValid(ax.gui.mainmenu) ) then return false end
     if ( IsValid(ax.gui.tab) ) then return false end
 
