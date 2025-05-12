@@ -68,16 +68,31 @@ function MODULE:LoadEntities()
 end
 
 concommand.Add("ax_persistence_save", function(client, cmd, arguments)
+    if ( IsValid(client) and !client:IsAdmin() ) then
+        client:Notify("You do not have permission to use this command!")
+        return
+    end
+
     MODULE:SaveEntities()
     ax.log:Send(ax.log:Format(client) .. " manually saved all persistent entities.")
 end)
 
 concommand.Add("ax_persistence_load", function(client, cmd, arguments)
+    if ( IsValid(client) and !client:IsAdmin() ) then
+        client:Notify("You do not have permission to use this command!")
+        return
+    end
+
     MODULE:LoadEntities()
     ax.log:Send(ax.log:Format(client) .. " manually loaded all persistent entities.")
 end)
 
 concommand.Add("ax_persistence_mark", function(client, cmd, arguments)
+    if ( !IsValid(client) or !client:IsAdmin() ) then
+        client:Notify("You do not have permission to use this command!")
+        return
+    end
+
     local ent = client:GetEyeTrace().Entity
     if ( !IsValid(ent) ) then return end
 
