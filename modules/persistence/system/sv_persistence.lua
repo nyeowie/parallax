@@ -34,7 +34,7 @@ function MODULE:LoadEntities()
 
     for k, v in pairs(savedEntities) do
         for _, ent in ipairs(ents.FindByClass(v.class)) do
-            if ( ent.axPersistent != true ) then continue end
+            if ( ent:GetRelay("persistent") != true ) then continue end
 
             SafeRemoveEntity(ent)
         end
@@ -61,7 +61,7 @@ function MODULE:LoadEntities()
             handler.Load(ent, entData.data)
         end
 
-        ent.axPersistent = true
+        ent:SetRelay("persistent", true)
     end
 
     ax.log:Send("Loaded " .. #savedEntities .. " persistent entities.")
@@ -98,7 +98,12 @@ concommand.Add("ax_persistence_mark", function(client, cmd, arguments)
     local ent = client:GetEyeTrace().Entity
     if ( !IsValid(ent) ) then return end
 
-    ent.axPersistent = true
+    if ( ent:GetRelay("persistent") == true ) then
+        client:Notify("This entity is already marked for persistence.")
+        return
+    end
+
+    ent:SetRelay("persistent", true)
     ax.log:Send(ax.log:Format(client) .. " marked entity " .. tostring(ent) .. " as persistent.")
     client:Notify("Marked entity " .. tostring(ent) .. " as persistent.")
 end)
