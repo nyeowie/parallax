@@ -31,7 +31,7 @@ function INV:GetMaxWeight()
     local override = hook.Run("GetInventoryMaxWeight", self)
     if ( isnumber(override) ) then return override end
 
-    return self.MaxWeight or ax.config:Get("inventory.maxweight", 20)
+    return self.MaxWeight or ax.config:Get("inventory.max.weight", 20)
 end
 
 function INV:GetWeight()

@@ -65,7 +65,7 @@ function PANEL:SetInventory(id)
 
     self.container:Clear()
 
-    local total = inventory:GetWeight() / ax.config:Get("inventory.maxweight", 20)
+    local total = inventory:GetWeight() / ax.config:Get("inventory.max.weight", 20)
 
     local progress = self.container:Add("DProgress")
     progress:Dock(TOP)
@@ -79,7 +79,7 @@ function PANEL:SetInventory(id)
         draw.RoundedBox(0, 0, 0, width * fraction, height, Color(100, 200, 175, 200))
     end
 
-    local maxWeight = ax.config:Get("inventory.maxweight", 20)
+    local maxWeight = ax.config:Get("inventory.max.weight", 20)
     local weight = math.Round(maxWeight * progress:GetFraction(), 2)
 
     local label = progress:Add("ax.text")
