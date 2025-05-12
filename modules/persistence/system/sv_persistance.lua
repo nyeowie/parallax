@@ -75,6 +75,7 @@ concommand.Add("ax_persistence_save", function(client, cmd, arguments)
 
     MODULE:SaveEntities()
     ax.log:Send(ax.log:Format(client) .. " manually saved all persistent entities.")
+    client:Notify("Saved all persistent entities.")
 end)
 
 concommand.Add("ax_persistence_load", function(client, cmd, arguments)
@@ -85,6 +86,7 @@ concommand.Add("ax_persistence_load", function(client, cmd, arguments)
 
     MODULE:LoadEntities()
     ax.log:Send(ax.log:Format(client) .. " manually loaded all persistent entities.")
+    client:Notify("Loaded all persistent entities.")
 end)
 
 concommand.Add("ax_persistence_mark", function(client, cmd, arguments)
