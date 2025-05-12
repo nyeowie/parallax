@@ -4,8 +4,10 @@ function MODULE:SaveData()
     self:SaveEntities()
 end
 
+function MODULE:PostPlayerItemAction(client, actionName, item)
+    self:SaveEntities()
+end
+
 function MODULE:InitPostEntity()
-    timer.Simple(1, function()
-        self:LoadEntities()
-    end)
+    self:LoadEntities()
 end
