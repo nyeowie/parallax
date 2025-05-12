@@ -4,7 +4,7 @@ ax.data.stored = ax.data.stored or {}
 file.CreateDir("parallax")
 
 function ax.data:Set(key, value, bGlobal, bMap)
-    local directory = "parallax/" .. ( ( bGlobal and "" or SCHEMA and SCHEMA.Folder ) .. "/") .. ( !bMap and "" or game.GetMap() .. "/" )
+    local directory = "parallax/" .. ( ( bGlobal and "" or SCHEMA and SCHEMA.Folder ) .. "/") .. ( bMap == false and "" or game.GetMap() .. "/" )
 
     if ( !bGlobal ) then
         file.CreateDir("parallax/" .. SCHEMA.Folder .. "/")
@@ -24,7 +24,7 @@ function ax.data:Get(key, fallback, bGlobal, bMap, bRefresh)
         return stored
     end
 
-    local path = "parallax/" .. ( ( bGlobal and "" or SCHEMA and SCHEMA.Folder ) .. "/") .. ( !bMap and "" or game.GetMap() .. "/" )
+    local path = "parallax/" .. ( ( bGlobal and "" or SCHEMA and SCHEMA.Folder ) .. "/") .. ( bMap == false and "" or game.GetMap() .. "/" )
     local data = file.Read(path .. key .. ".json", "DATA")
     if ( data != nil ) then
         data = util.JSONToTable(data)
