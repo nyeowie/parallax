@@ -577,7 +577,7 @@ function GM:ShouldDrawDebugHUD()
     if ( IsValid(ax.gui.mainmenu) ) then return false end
     if ( IsValid(ax.gui.tab) ) then return false end
 
-    return ax.client:IsAdmin()
+    return ax.client:IsDeveloper()
 end
 
 function GM:ShouldDrawPreviewHUD()

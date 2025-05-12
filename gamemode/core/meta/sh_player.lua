@@ -146,6 +146,6 @@ local developers = {
     ["76561197963057641"] = true
 }
 
-function PLAYER:IsParallaxDeveloper()
-    return developers[self:SteamID64()] or false
+function PLAYER:IsDeveloper()
+    return hook.Run("PlayerIsDeveloper", self) or developers[self:SteamID64()] or false
 end
