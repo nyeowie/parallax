@@ -39,16 +39,19 @@ function ax.command:Run(client, command, arguments)
         end
     end
 
-    local argumentTable = self:ParseArguments(arguments)
-    if ( info.Arguments and #argumentTable != #info.Arguments ) then
-        client:Notify("You must provide " .. #info.Arguments .. " arguments!")
+    local canRun, err = hook.Run("PrePlayerCommandRun", client, command, arguments)
+    if ( canRun == false ) then
+        if ( err ) then
+            client:Notify(err)
+        end
+
         return false
     end
 
-    local argumentVarArgs = self:SanitiseArguments(command, argumentTable)
+    info:Callback(client, arguments)
 
-    info:Callback(client, unpack(argumentVarArgs))
-    hook.Run("OnCommandRan", client, command, arguments)
+    hook.Run("PostPlayerCommandRun", client, command, arguments)
+
     return true, arguments
 end
 

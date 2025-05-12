@@ -16,7 +16,7 @@ function ax.chat:Register(uniqueID, chatData)
     end
 
     if ( !isfunction(chatData.OnChatAdd) ) then
-        chatData.OnChatAdd = function(this, speaker, text)
+        chatData.OnChatAdd = function(info, speaker, text)
             chat.AddText(color_white, speaker:Name() .. " says \"" .. text .. "\"")
             chat.PlaySound()
         end
@@ -26,10 +26,8 @@ function ax.chat:Register(uniqueID, chatData)
         ax.command:Register(uniqueID, {
             Description = chatData.Description or "",
             Prefixes = chatData.Prefixes,
-            Arguments = {
-                ax.types.text
-            },
-            Callback = function(this, client, arguments)
+            Callback = function(info, client, arguments)
+                local text = table.concat(arguments, " ")
                 if ( !isstring(text) or #text < 1 ) then
                     client:Notify("You must provide a message to send!")
                     return false
