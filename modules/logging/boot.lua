@@ -32,6 +32,4 @@ function MODULE:Format(ent)
     return ent:GetClass() .. " (" .. ent:GetModel() .. " / " .. ent:EntIndex() .. ")"
 end
 
-ax.color:Register("log.message", Color(250, 200, 25))
-
 ax.log = MODULE

@@ -12,7 +12,7 @@ function MODULE:Send(...)
 
     -- Send to the remote console if we are in a dedicated server
     if ( game.IsDedicated() ) then
-        ax.util:Print(ax.color:Get("log.message"), "Logging >> ", color_white, ...)
+        ax.util:Print("[log] ", ...)
     end
 
     ax.net:Start(receivers, "logging.send", {...})
