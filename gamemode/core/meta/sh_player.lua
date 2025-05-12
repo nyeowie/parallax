@@ -147,5 +147,5 @@ local developers = {
 }
 
 function PLAYER:IsDeveloper()
-    return hook.Run("PlayerIsDeveloper", self) or developers[self:SteamID64()] or false
+    return hook.Run("IsPlayerDeveloper", self) or developers[self:SteamID64()] or false
 end
