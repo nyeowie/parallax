@@ -1,4 +1,4 @@
-local time
+local time = CurTime()
 function GM:PlayerInitialSpawn(client)
     if ( client:IsBot() ) then return end
 
@@ -48,7 +48,7 @@ end
 
 function GM:PlayerDisconnected(client)
     if ( !client:IsBot() ) then
-        client:SetDBVar("play_time", client:GetDBVar("play_time") + (os.time() - client:GetDBVar("last_played")))
+        client:SetDBVar("play_time", client:GetDBVar("play_time", 0) + (os.time() - client:GetDBVar("last_played", 0)))
         client:SetDBVar("last_played", os.time())
         client:SaveDB()
 

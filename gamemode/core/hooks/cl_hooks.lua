@@ -167,7 +167,9 @@ function GM:HUDPaintBackground()
         end
 
         if ( hook.Run("ShouldDrawDefaultVignette") != false ) then
-            paint.rects.drawRect(0, 0, scrW, scrH, vignetteColor, vignette)
+            surface.SetDrawColor(vignetteColor)
+            surface.SetMaterial(vignette)
+            surface.DrawRect(0, 0, scrW, scrH, vignetteColor)
         end
 
         hook.Run("DrawVignette", 1 - (vignetteColor.a / 255))
@@ -264,7 +266,7 @@ function GM:HUDPaint()
             x, y = screen.x, screen.y
         end
 
-        paint.circles.drawCircle(x, y, size, size, color_white)
+        -- TODO: Add crosshair
     end
 
     shouldDraw = hook.Run("ShouldDrawAmmoBox")

@@ -1,39 +1,8 @@
-local function mask(drawMask, draw)
-    render.ClearStencil()
-    render.SetStencilEnable(true)
-
-    render.SetStencilWriteMask(1)
-    render.SetStencilTestMask(1)
-
-    render.SetStencilFailOperation(STENCIL_REPLACE)
-    render.SetStencilPassOperation( STENCIL_REPLACE)
-    render.SetStencilZFailOperation(STENCIL_KEEP)
-    render.SetStencilCompareFunction(STENCIL_ALWAYS)
-    render.SetStencilReferenceValue(1)
-
-    drawMask()
-
-    render.SetStencilFailOperation(STENCIL_KEEP)
-    render.SetStencilPassOperation(STENCIL_REPLACE)
-    render.SetStencilZFailOperation(STENCIL_KEEP)
-    render.SetStencilCompareFunction(STENCIL_EQUAL)
-    render.SetStencilReferenceValue(1)
-
-    draw()
-
-    render.SetStencilEnable(false)
-    render.ClearStencil()
-end
-
-local RIPPLE_DIE_TIME = 0.4
-local RIPPLE_START_ALPHA = 50
-
 DEFINE_BASECLASS("DButton")
 
 local PANEL = {}
 
 AccessorFunc(PANEL, "inertia", "Inertia", FORCE_NUMBER)
-AccessorFunc(PANEL, "doRippleEffect", "DoRippleEffect", FORCE_BOOL)
 
 function PANEL:Init()
     self:SetFont("parallax.button")
@@ -44,8 +13,6 @@ function PANEL:Init()
 
     self.inertia = 0
     self.inertiaTarget = 0
-
-    self.doRippleEffect = true
 
     self.baseHeight = self:GetTall()
     self.baseTextColor = self:GetTextColor()
@@ -106,30 +73,6 @@ function PANEL:Paint(width, height)
     local backgroundColor = Color(self.textColor.r / 8, self.textColor.g / 8, self.textColor.b / 8)
     draw.RoundedBox(0, 0, 0, width, height, ColorAlpha(backgroundColor, 100 * self.inertia))
 
-    paint.startPanel(self)
-        mask(function()
-            paint.roundedBoxes.roundedBox(0, 0, 0, width, height, Color(0, 0, 0, 0))
-        end,
-        function()
-            if ( !self.doRippleEffect or performanceAnimations == false ) then return end
-
-            local ripple = self.rippleEffect
-            if ( ripple == nil ) then return end
-
-            local rippleX, rippleY, rippleStartTime = ripple[1], ripple[2], ripple[3]
-
-            local percent = (RealTime() - rippleStartTime)  / RIPPLE_DIE_TIME
-            if ( percent >= 1 ) then
-                self.rippleEffect = nil
-            else
-                local alpha = RIPPLE_START_ALPHA * (1 - percent) * self.inertia
-                local radius = math.max(width, height) * percent * math.sqrt(2)
-
-                paint.roundedBoxes.roundedBox(radius, rippleX - radius, rippleY - radius, radius * 2, radius * 2, ColorAlpha(self.textColor, alpha))
-            end
-        end)
-    paint.endPanel()
-
     surface.SetDrawColor(self.textColor.r, self.textColor.g, self.textColor.b, 200 * self.inertia)
     surface.DrawRect(0, 0, ScreenScale(4) * self.inertia, height)
 
@@ -175,9 +118,6 @@ end
 function PANEL:OnMousePressed(key)
     surface.PlaySound("ax.button.click")
 
-    local posX, posY = self:LocalCursorPos()
-    self.rippleEffect = {posX, posY, RealTime()}
-
     if ( key == MOUSE_LEFT ) then
         self:DoClick()
     else
@@ -210,9 +150,6 @@ function PANEL:Init()
     self.inertia = 0
     self.inertiaTarget = 0
 
-    self.doRippleEffect = true
-    self.rippleEffect = nil
-
     self.baseHeight = self:GetTall()
     self.baseTextColor = self:GetTextColor()
 
@@ -241,28 +178,6 @@ function PANEL:Paint(width, height)
     self.textColor = self.textColor:Lerp(self.textColorTarget, time)
 
     draw.RoundedBox(0, 0, 0, width, height, ColorAlpha(self.backgroundColor, 255 * self.inertia))
-
-    paint.startPanel(self)
-        mask(function()
-            paint.roundedBoxes.roundedBox(0, 0, 0, width, height, color_transparent)
-        end,
-        function()
-            local ripple = self.rippleEffect
-            if ( ripple == nil or performanceAnimations == false ) then return end
-
-            local rippleX, rippleY, rippleStartTime = ripple[1], ripple[2], ripple[3]
-
-            local percent = (RealTime() - rippleStartTime)  / RIPPLE_DIE_TIME
-            if ( percent >= 1 ) then
-                self.rippleEffect = nil
-            else
-                local alpha = (RIPPLE_START_ALPHA * 2) * (1 - percent) * self.inertia
-                local radius = math.max(width, height) * percent * math.sqrt(2)
-
-                paint.roundedBoxes.roundedBox(radius, rippleX - radius, rippleY - radius, radius * 2, radius * 2, Color(0, 0, 0, alpha))
-            end
-        end)
-    paint.endPanel()
 
     return false
 end
