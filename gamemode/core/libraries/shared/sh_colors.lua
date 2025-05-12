@@ -53,7 +53,7 @@ function ax.color:Dim(col, frac)
 end
 
 if ( CLIENT ) then
-    concommand.Add("ax_list_colours", function(client, cmd, args)
+    concommand.Add("ax_list_colours", function(client, cmd, arguments)
         for k, v in pairs(ax.color.stored) do
             ax.util:Print("Color: " .. k .. " >> ", ax.color:Get("cyan"), v, " Color Sample")
         end

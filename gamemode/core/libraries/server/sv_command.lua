@@ -88,7 +88,7 @@ concommand.Add("ax_command", function(client, cmd, arguments)
     end
 
     clientTable.axNextCommand = CurTime() + 1
-end--[[, function(cmd, argStr, args)
+end--[[, function(cmd, argStr, arguments)
     local commands = {}
 
     for k, v in pairs(ax.command.stored) do

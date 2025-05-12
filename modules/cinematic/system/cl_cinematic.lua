@@ -185,7 +185,7 @@ concommand.Add("ax_cinematic_example", function()
 end)
 
 -- Prints a point with the current eye pos, angle and fov, used for adding new points
-concommand.Add("ax_cinematic_print", function(ply, cmd, args)
+concommand.Add("ax_cinematic_print", function(ply, cmd, arguments)
     local pos = ply:EyePos()
     local ang = ply:EyeAngles()
     local fov = 90

@@ -12,14 +12,14 @@ function chat.AddText(...)
         return
     end
 
-    local args = {...}
+    local arguments = {...}
     local currentColor = color_white
     local font = "parallax.chat"
     local maxWidth = ax.gui.chatbox:GetWide() - 20
 
     local markupStr = ""
 
-    for _, v in ipairs(args) do
+    for _, v in ipairs(arguments) do
         if ( IsColor(v) ) then
             currentColor = v
         elseif ( istable(v) and v.r and v.g and v.b ) then

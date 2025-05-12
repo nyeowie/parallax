@@ -11,7 +11,7 @@ end
 
 --- Hooks a network message.
 -- @string name Unique identifier.
--- @func callback Callback with player, unpacked args.
+-- @func callback Callback with player, unpacked arguments.
 function ax.net:Hook(name, callback)
     self.stored[name] = callback
 end
@@ -22,8 +22,8 @@ end
 -- @vararg Arguments to send.
 if ( SERVER ) then
     function ax.net:Start(target, name, ...)
-        local args = {...}
-        local encoded = sfs.encode(args)
+        local arguments = {...}
+        local encoded = sfs.encode(arguments)
         if ( !isstring(encoded) or #encoded < 1 ) then return end
 
         local recipients = {}
@@ -57,8 +57,8 @@ if ( SERVER ) then
     end
 else
     function ax.net:Start(name, ...)
-        local args = {...}
-        local encoded = sfs.encode(args)
+        local arguments = {...}
+        local encoded = sfs.encode(arguments)
         if ( !isstring(encoded) or #encoded < 1 ) then return end
 
         net.Start("ax.net.msg")

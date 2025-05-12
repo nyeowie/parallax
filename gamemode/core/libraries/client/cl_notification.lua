@@ -116,8 +116,8 @@ notification.AddLegacy = function(text, type, length)
     ax.notification:Add(text, length or 3, color)
 end
 
-concommand.Add("test_notification", function(client, cmd, args)
-    local text = table.concat(args, " ")
+concommand.Add("test_notification", function(client, cmd, arguments)
+    local text = table.concat(arguments, " ")
     ax.notification:Add(text, 5)
 end)
 

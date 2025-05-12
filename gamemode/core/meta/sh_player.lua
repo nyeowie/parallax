@@ -47,12 +47,12 @@ end
 PLAYER.Nick = PLAYER.Name
 
 function PLAYER:ChatText(...)
-    local args = {ax.color:Get("text"), ...}
+    local arguments = {ax.color:Get("text"), ...}
 
     if ( SERVER ) then
-        ax.net:Start(self, "chat.text", args)
+        ax.net:Start(self, "chat.text", arguments)
     else
-        chat.AddText(unpack(args))
+        chat.AddText(unpack(arguments))
     end
 end
 

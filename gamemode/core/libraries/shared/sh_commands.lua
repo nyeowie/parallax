@@ -16,7 +16,7 @@ ax.command.stored = {}
 -- @field string UniqueID The unique identifier of the command.
 -- @usage ax.command:Register({
 --     Name = "example",
---     Callback = function(client, args)
+--     Callback = function(client, arguments)
 --         print("Example command executed!")
 --     end,
 --     Prefixes = {"example", "ex"},
@@ -97,7 +97,7 @@ function ax.command:Get(identifier)
 end
 
 function ax.command:ParseArguments(arguments)
-    local args = {}
+    local arguments = {}
     local bQuoted = false
     local buffer = ""
 
@@ -108,7 +108,7 @@ function ax.command:ParseArguments(arguments)
             bQuoted = !bQuoted
         elseif ( char == " " and !bQuoted ) then
             if ( buffer != "" ) then
-                table.insert(args, buffer)
+                table.insert(arguments, buffer)
                 buffer = ""
             end
         else
@@ -117,16 +117,16 @@ function ax.command:ParseArguments(arguments)
     end
 
     if ( buffer != "" ) then
-        table.insert(args, buffer)
+        table.insert(arguments, buffer)
     end
 
-    for i, v in ipairs(args) do
+    for i, v in ipairs(arguments) do
         if ( string.sub(v, 1, 1) == "\"" and string.sub(v, -1) == "\"" ) then
-            args[i] = string.sub(v, 2, -2)
+            arguments[i] = string.sub(v, 2, -2)
         end
     end
 
-    return args
+    return arguments
 end
 
 function ax.command:SanitiseArguments(command, arguments)

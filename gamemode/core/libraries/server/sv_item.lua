@@ -286,10 +286,10 @@ function ax.item:Spawn(itemID, uniqueID, position, angles, callback, data)
     return entity
 end
 
-concommand.Add("ax_item_add", function(client, cmd, args)
+concommand.Add("ax_item_add", function(client, cmd, arguments)
     if ( !client:IsAdmin() ) then return end
 
-    local uniqueID = args[1]
+    local uniqueID = arguments[1]
     if ( !uniqueID or !ax.item.stored[uniqueID] ) then return end
 
     local characterID = client:GetCharacterID()
@@ -303,10 +303,10 @@ concommand.Add("ax_item_add", function(client, cmd, args)
     end)
 end)
 
-concommand.Add("ax_item_spawn", function(client, cmd, args)
+concommand.Add("ax_item_spawn", function(client, cmd, arguments)
     if ( !client:IsAdmin() ) then return end
 
-    local uniqueID = args[1]
+    local uniqueID = arguments[1]
     if ( !uniqueID ) then return end
 
     local pos = client:GetEyeTrace().HitPos + vector_up * 10

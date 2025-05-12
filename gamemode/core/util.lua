@@ -95,10 +95,10 @@ end
 -- @param ... any The package to prepare.
 -- @return any The prepared package.
 function ax.util:PreparePackage(...)
-    local args = {...}
+    local arguments = {...}
     local package = {}
 
-    for k, v in ipairs(args) do
+    for k, v in ipairs(arguments) do
         if ( type(v) == "Player" ) then
             table.insert(package, team.GetColor(v:Team()))
             table.insert(package, v:Name())
@@ -124,22 +124,22 @@ local clientMsgColor = Color(255, 241, 122, 200)
 -- @realm shared
 -- @param ... any The message to print.
 function ax.util:Print(...)
-    local args = self:PreparePackage(...)
+    local arguments = self:PreparePackage(...)
 
     local realmColor = SERVER and serverMsgColor or clientMsgColor
-    MsgC(violetColor, "[Parallax] ", realmColor, unpack(args))
+    MsgC(violetColor, "[Parallax] ", realmColor, unpack(arguments))
 
-    return args
+    return arguments
 end
 
 --- Prints an error message to the console.
 -- @realm shared
 -- @param ... any The message to print.
 function ax.util:PrintError(...)
-    local args = self:PreparePackage(...)
+    local arguments = self:PreparePackage(...)
 
     local realmColor = SERVER and serverErrorColor or clientErrorColor
-    MsgC(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(args))
+    MsgC(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(arguments))
 
     if ( SERVER ) then
         for k, v in player.Iterator() do
@@ -152,10 +152,10 @@ function ax.util:PrintError(...)
             ax.client:Notify("An error has occurred in the client. Check the console for more information.", NOTIFY_ERROR)
         end
 
-        chat.AddText(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(args))
+        chat.AddText(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(arguments))
     end
 
-    return args
+    return arguments
 end
 
 --- Prints a warning message to the console.
@@ -163,11 +163,11 @@ end
 -- @param ... any The message to print.
 local colorWarning = Color(255, 200, 120)
 function ax.util:PrintWarning(...)
-    local args = self:PreparePackage(...)
+    local arguments = self:PreparePackage(...)
 
-    MsgC(violetColor, "[Parallax] ", colorWarning, "[Warning] ", unpack(args))
+    MsgC(violetColor, "[Parallax] ", colorWarning, "[Warning] ", unpack(arguments))
 
-    return args
+    return arguments
 end
 
 --- Loads a file based on the realm.

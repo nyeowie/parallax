@@ -241,7 +241,7 @@ function ax.character:CacheAll(client)
     return clientTable.axCharacters
 end
 
-concommand.Add("ax_character_test_create", function(client, cmd, args)
+concommand.Add("ax_character_test_create", function(client, cmd, arguments)
     ax.character:Create(client, {
         name = "Test Character"
     })
