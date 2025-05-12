@@ -8,20 +8,37 @@ function MODULE:SaveEntities()
 
     savedEntities = {}
 
+    -- Iterate through all possible persistent entity classes and mark them
+    -- as persistent. This is done to ensure that all entities are marked
+    -- correctly before saving.
     for class, methods in pairs(self.PersistentEntities) do
         for _, ent in ipairs(ents.FindByClass(class)) do
             if ( !IsValid(ent) ) then continue end
 
-            local data = methods.Save and methods.Save(ent) or {}
-
-            table.insert(savedEntities, {
-                class = class,
-                pos = ent:GetPos(),
-                ang = ent:GetAngles(),
-                mdl = ent:GetModel(),
-                data = data
-            })
+            ent:SetRelay("persistent", true)
         end
+    end
+
+    -- Now we can iterate through all entities and save their data.
+    -- Not sure if this is a fast way to do this, but it works.
+    -- If it becomes a problem, we can always optimize it later.
+    for _, ent in ents.Iterator() do
+        if ( !IsValid(ent) or ent:IsPlayer() ) then continue end
+
+        local class = ent:GetClass()
+        local relay = ent:GetRelay("persistent")
+        if ( relay != true ) then continue end
+
+        local methods = self.PersistentEntities[class]
+        local data = methods and methods.Save and methods.Save(ent) or {}
+
+        table.insert(savedEntities, {
+            class = class,
+            pos = ent:GetPos(),
+            ang = ent:GetAngles(),
+            mdl = ent:GetModel(),
+            data = data
+        })
     end
 
     ax.log:Send("Saved " .. #savedEntities .. " persistent entities.")
@@ -106,4 +123,27 @@ concommand.Add("ax_persistence_mark", function(client, cmd, arguments)
     ent:SetRelay("persistent", true)
     ax.log:Send(ax.log:Format(client) .. " marked entity " .. tostring(ent) .. " as persistent.")
     client:Notify("Marked entity " .. tostring(ent) .. " as persistent.")
+
+    MODULE:SaveEntities()
+end)
+
+concommand.Add("ax_persistence_unmark", function(client, cmd, arguments)
+    if ( !IsValid(client) or !client:IsAdmin() ) then
+        client:Notify("You do not have permission to use this command!")
+        return
+    end
+
+    local ent = client:GetEyeTrace().Entity
+    if ( !IsValid(ent) ) then return end
+
+    if ( ent:GetRelay("persistent") != true ) then
+        client:Notify("This entity is not marked for persistence.")
+        return
+    end
+
+    ent:SetRelay("persistent", false)
+    ax.log:Send(ax.log:Format(client) .. " unmarked entity " .. tostring(ent) .. " as persistent.")
+    client:Notify("Unmarked entity " .. tostring(ent) .. " as persistent.")
+
+    MODULE:SaveEntities()
 end)

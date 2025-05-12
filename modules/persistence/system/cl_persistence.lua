@@ -1,0 +1,33 @@
+local MODULE = MODULE
+
+properties.Add("ax.persistence.mark", {
+    MenuLabel = "[Parallax] Mark for Persistence",
+    Order = -1,
+    MenuIcon = "icon16/accept.png",
+    Filter = function(self, ent, client)
+        if ( !IsValid(ent) or ent:IsPlayer() ) then return false end
+        if ( MODULE.PersistentEntities[ent:GetClass()] ) then return false end
+        if ( ent:GetRelay("persistent") == true ) then return false end
+
+        return client:IsAdmin()
+    end,
+    Action = function(self, ent)
+        ax.net:Start("persistence.mark", ent)
+    end
+})
+
+properties.Add("ax.persistence.unmark", {
+    MenuLabel = "[Parallax] Unmark for Persistence",
+    Order = -1,
+    MenuIcon = "icon16/cross.png",
+    Filter = function(self, ent, client)
+        if ( !IsValid(ent) or ent:IsPlayer() ) then return false end
+        if ( MODULE.PersistentEntities[ent:GetClass()] ) then return false end
+        if ( ent:GetRelay("persistent") != true ) then return false end
+
+        return client:IsAdmin()
+    end,
+    Action = function(self, ent)
+        ax.net:Start("persistence.unmark", ent)
+    end
+})
