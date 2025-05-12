@@ -189,8 +189,8 @@ function GM:PostPlayerLoadedCharacter(client, character, previousCharacter)
     end
 end
 
-local nextThink = 0
-local nextSave = 0
+local nextThink = CurTime() + 1
+local nextSave = CurTime() + ax.config:Get("save.interval", 300)
 local playerVoiceListeners = {}
 function GM:Think()
     if ( CurTime() >= nextThink ) then
