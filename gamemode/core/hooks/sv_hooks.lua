@@ -225,12 +225,8 @@ function GM:Think()
     end
 end
 
-function GM:SaveData()
-    ax.util:Print("Saving data...")
-
-    -- TODO: Empty hook, implement this in the future
-
-    ax.util:Print("Data saved.")
+function GM:Shutdown()
+    hook.Run("SaveData")
 end
 
 function GM:PlayerCanHearPlayersVoice(listener, talker)
