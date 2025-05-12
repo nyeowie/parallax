@@ -4,11 +4,11 @@
 ax.chat = ax.chat or {}
 ax.chat.messages = ax.chat.messages or {}
 
-local nativeAddText = chat.AddText
+chat.AddTextInternal = chat.AddTextInternal or chat.AddText
 
 function chat.AddText(...)
     if ( !IsValid(ax.gui.chatbox) ) then
-        nativeAddText(...)
+        chat.AddTextInternal(...)
         return
     end
 
