@@ -99,14 +99,14 @@ function GM:PlayerSay(client, text, teamChat)
         local message = string.Explode(" ", string.sub(text, 4))
         table.remove(message, 1)
 
-        ax.command:Run(client, "looc", table.concat(message, " "))
+        ax.command:Run(client, "looc", message)
     elseif ( string.sub(text, 1, 1) == "/" ) then
         -- This is a command, so we need to parse it
         local arguments = string.Explode(" ", string.sub(text, 2))
         local command = arguments[1]
         table.remove(arguments, 1)
 
-        ax.command:Run(client, command, table.concat(arguments, " "))
+        ax.command:Run(client, command, arguments)
     else
         -- Everything else is a normal chat message
         ax.chat:SendSpeaker(client, "ic", text)

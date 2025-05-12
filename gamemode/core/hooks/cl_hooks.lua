@@ -765,15 +765,6 @@ end
 function GM:FinishChat()
 end
 
-function GM:OnPlayerChat(client, text, team, dead)
-    if ( !IsValid(ax.gui.chatbox) ) then return end
-
-    local prefix = IsValid(client) and client:Nick() .. ": " or ""
-    local msg = prefix .. text
-
-    ax.gui.chatbox:AddLine(msg, team and Color(150, 200, 255) or color_white)
-end
-
 function GM:ForceDermaSkin()
     return "Parallax"
 end
