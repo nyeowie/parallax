@@ -22,7 +22,7 @@ function MODULE:FormatPlayer(client)
     return client:SteamName() .. " (" .. client:Name() .. " / " .. client:SteamID64() .. ")"
 end
 
-function MODULE:FormatEntity(ent)
+function MODULE:Format(ent)
     if ( !IsValid(ent) or ent == Entity(0) ) then return "world" end
 
     if ( ent:IsPlayer() ) then
