@@ -96,13 +96,13 @@ function ax.command:Get(identifier)
     return false
 end
 
-function ax.command:ParseArguments(arguments)
+function ax.command:ParseArguments(toParse)
     local arguments = {}
     local bQuoted = false
     local buffer = ""
 
-    for i = 1, #arguments do
-        local char = arguments[i]
+    for i = 1, #toParse do
+        local char = toParse[i]
 
         if ( char == "\"" ) then
             bQuoted = !bQuoted
