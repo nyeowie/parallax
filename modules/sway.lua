@@ -77,14 +77,13 @@ local function GetViewModelBob(pos, ang)
 
     local client = ax.client
     local ft = FrameTime()
-    local time = ft * 4
 
-    Multiplier = Lerp(time * 50, Multiplier, client:IsSprinting() and swayMultSprint or swayMult)
+    Multiplier = Lerp(ft * 64, Multiplier, client:IsSprinting() and swayMultSprint or swayMult)
 
     local velocityangle = client:GetVelocity()
     local v = velocityangle:Length()
     v = math.Clamp(v, 0, 500)
-    ViewModelBobVelocity = math.Approach(ViewModelBobVelocity, v, ft * 10000)
+    ViewModelBobVelocity = math.Approach(ViewModelBobVelocity, v, ft * 1000)
     local d = math.Clamp(ViewModelBobVelocity / 500, 0, 1)
 
     if ( client:OnGround() and client:GetMoveType() != MOVETYPE_NOCLIP ) then
@@ -98,15 +97,15 @@ local function GetViewModelBob(pos, ang)
     d = d * Lerp(amount, 1, 0.03) * Lerp(ts, 1, 1.5)
     mag = d * 2
     mag = mag * Lerp(ts, 1, 2)
-    step = Lerp(time, step, 12)
+    step = Lerp(ft * 4, step, 12)
 
     local sidemove = (client:GetVelocity():Dot(client:EyeAngles():Right()) / client:GetMaxSpeed()) * 4 * (1.5-amount)
     SideMove = Lerp(math.Clamp(ft * 8, 0, 1), SideMove, sidemove)
 
-    CrouchMultiplier = Lerp(time, CrouchMultiplier, 1)
+    CrouchMultiplier = Lerp(ft * 4, CrouchMultiplier, 1)
     if ( client:Crouching() ) then
-        CrouchMultiplier = Lerp(time, CrouchMultiplier, 3.5 + amount * 10)
-        step = Lerp(time, step, 8)
+        CrouchMultiplier = Lerp(ft * 4, CrouchMultiplier, 3.5 + amount * 10)
+        step = Lerp(ft * 4, step, 8)
     end
 
     local jumpmove = math.Clamp(math.ease.InExpo(math.Clamp(velocityangle.z, -150, 0) / -150) / 2 + math.ease.InExpo(math.Clamp(velocityangle.z, 0, 500) / 500) * -50, -4, 2.5) / 2
@@ -145,9 +144,7 @@ local function GetViewModelBob(pos, ang)
     local steprate = Lerp(d, 1, 2.75)
     steprate = Lerp(ViewModelNotOnGround, steprate, 0.75)
 
-    if ( IsFirstTimePredicted() or game.SinglePlayer() ) then
-        BobCT = BobCT + ( ft * steprate )
-    end
+    BobCT = BobCT + ( ft / 2 * steprate )
 
     return pos, ang
 end
