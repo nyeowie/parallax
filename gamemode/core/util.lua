@@ -578,7 +578,7 @@ if ( CLIENT ) then
     -- @param alpha number Overlay alpha (default 255).
     -- @usage ax.util:DrawBlur(panel, 6, 0.2, 200)
     function ax.util:DrawBlur(panel, intensity, steps, alpha)
-        if ( !IsValid(panel) ) then return end
+        if ( !IsValid(panel) or alpha == 0 ) then return end
 
         if ( ax.option:Get("performance.blur") != true ) then
             surface.SetDrawColor(30, 30, 30, alpha or (intensity or 5) * 20)
@@ -613,8 +613,10 @@ if ( CLIENT ) then
     -- @param alpha number Overlay alpha (default 255).
     -- @usage ax.util:DrawBlurRect(0, 0, 512, 256, 8, 0.2, 180)
     function ax.util:DrawBlurRect(x, y, width, height, intensity, steps, alpha)
+        if ( alpha == 0 ) then return end
+
         if ( ax.option:Get("performance.blur") != true ) then
-            surface.SetDrawColor(30, 30, 30, (intensity or 5) * 20)
+            surface.SetDrawColor(30, 30, 30, alpha or (intensity or 5) * 20)
             surface.DrawRect(x, y, width, height)
             return
         end
