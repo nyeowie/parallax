@@ -136,13 +136,7 @@ function PANEL:Populate()
         playButton:SetText("mainmenu.play")
 
         playButton.DoClick = function(this)
-            ax.client:ScreenFade(SCREENFADE.OUT, color_black, 0.5, 0.5)
-            self:SetMouseInputEnabled(false)
-            self:SetKeyboardInputEnabled(false)
-            self:AlphaTo(0, 1, 0, function()
-                ax.client:ScreenFade(SCREENFADE.IN, color_black, 3, 0)
-                self:Remove()
-            end)
+            self:Remove()
         end
     end
 

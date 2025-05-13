@@ -537,14 +537,7 @@ function GM:OnPauseMenuShow()
     end
 
     if ( !IsValid(ax.gui.mainmenu) ) then
-        ax.client:ScreenFade(SCREENFADE.OUT, color_black, 1, 1)
-        timer.Simple(1, function()
-            vgui.Create("ax.mainmenu")
-            ax.gui.mainmenu:SetAlpha(0)
-            ax.gui.mainmenu:AlphaTo(255, 1, 0, function()
-                ax.client:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
-            end)
-        end)
+        vgui.Create("ax.mainmenu")
     else
         if ( ax.client:GetCharacter() ) then
             ax.gui.mainmenu:Remove()
