@@ -382,6 +382,34 @@ function ax.util:SafeParseTable(input)
     return {}
 end
 
+local directions = {
+    { min = -180.0, max = -157.5, name = "S"  },
+    { min = -157.5, max = -112.5, name = "SE" },
+    { min = -112.5, max = -67.5,  name = "E"  },
+    { min = -67.5,  max = -22.5,  name = "NE" },
+    { min = -22.5,  max = 22.5,   name = "N"  },
+    { min = 22.5,   max = 67.5,   name = "NW" },
+    { min = 67.5,   max = 112.5,  name = "W"  },
+    { min = 112.5,  max = 157.5,  name = "SW" },
+    { min = 157.5,  max = 180.0,  name = "S"  }
+}
+
+--- Returns the compass direction from a yaw angle using a lookup table.
+-- @param ang Angle The angle to interpret.
+-- @return string Compass heading (e.g., "N", "SW")
+-- @usage local heading = ax.util:GetHeadingFromAngle(client:EyeAngles())
+function ax.util:GetHeadingFromAngle(ang)
+    local yaw = ang.yaw or ang[2]
+
+    for _, dir in ipairs(directions) do
+        if ( yaw > dir.min and yaw <= dir.max ) then
+            return dir.name
+        end
+    end
+
+    return "N" -- Default to North if no match is found
+end
+
 local basePathFix = SoundDuration("npc/metropolice/pain1.wav") > 0 and "" or "../../hl2/sound/"
 
 --- Queues and plays multiple sounds from an entity with spacing and optional offsets.
@@ -507,6 +535,57 @@ function ax.util:LoadEntities(path)
     })
 
     self:LoadEntityFolder(path, "effects", "EFFECT", effects and effects.Register, nil, true)
+end
+
+--- Returns the current difference between local time and UTC in seconds.
+-- @realm shared
+-- @return number Time difference to UTC in seconds
+-- @usage local utcOffset = ax.util:GetUTCTime()
+function ax.util:GetUTCTime()
+    local utcTable = os.date("!*t")
+    local localTable = os.date("*t")
+
+    localTable.isdst = false
+
+    return os.difftime(os.time(utcTable), os.time(localTable))
+end
+
+local time = {
+    s = 1,                  -- Seconds
+    m = 60,                 -- Minutes
+    h = 3600,               -- Hours
+    d = 86400,              -- Days
+    w = 604800,             -- Weeks
+    mo = 2592000,           -- Months (approximate)
+    y = 31536000            -- Years (approximate)
+}
+
+--- Converts a formatted time string into total seconds.
+-- @realm shared
+-- @string input Text to interpret (e.g., "5y2d7w")
+-- @return number Time in seconds
+-- @return boolean True if format was valid, false otherwise
+-- @usage local seconds = ax.util:GetStringTime("2h30m")
+function ax.util:GetStringTime(input)
+    local rawMinutes = tonumber(input)
+    if ( rawMinutes ) then
+        return math.abs(rawMinutes * 60), true
+    end
+
+    local totalSeconds = 0
+    local hasValidUnit = false
+
+    for numberStr, suffix in input:lower():gmatch("(%d+)(%a+)") do
+        local count = tonumber(numberStr)
+        local multiplier = time[suffix]
+
+        if ( count and multiplier ) then
+            totalSeconds = totalSeconds + math.abs(count * multiplier)
+            hasValidUnit = true
+        end
+    end
+
+    return totalSeconds, hasValidUnit
 end
 
 if ( CLIENT ) then
