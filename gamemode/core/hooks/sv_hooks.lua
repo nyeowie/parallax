@@ -56,7 +56,6 @@ function GM:PlayerDisconnected(client)
         if ( character ) then
             character:SetPlayTime(character:GetPlayTime() + (os.time() - character:GetLastPlayed()))
             character:SetLastPlayed(os.time())
-            character:Save()
         end
     end
 end
@@ -223,6 +222,10 @@ function GM:Think()
         nextSave = CurTime() + ax.config:Get("save.interval", 300)
         hook.Run("SaveData")
     end
+end
+
+function GM:InitPostEntity()
+    hook.Run("LoadData")
 end
 
 function GM:Shutdown()
