@@ -310,6 +310,10 @@ ax.net:Hook("mainmenu", function()
     ax.gui.mainmenu = vgui.Create("ax.mainmenu")
 end)
 
+ax.net:Hook("intro", function()
+    ax.gui.intro = vgui.Create("ax.intro")
+end)
+
 ax.net:Hook("notification.send", function(text, type, duration)
     if ( !text ) then return end
 

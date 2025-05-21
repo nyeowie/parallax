@@ -34,7 +34,7 @@ ax.config:Register("mainmenu.music", {
     Description = "config.mainmenu.music.help",
     SubCategory = "config.mainmenu",
     Type = ax.types.string,
-    Default = "music/hl2_song20_submix0.mp3"
+    Default = "echovault/prison.mp3"
 })
 
 ax.config:Register("mainmenu.pos", {

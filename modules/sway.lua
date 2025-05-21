@@ -1,164 +1,322 @@
-local MODULE = MODULE
+local MODULE = MODULE or {}
 
-MODULE.Name = "Sway"
-MODULE.Description = "Implements a swaying effect ported over from ARC9."
-MODULE.Author = "Riggs"
+MODULE.name = "Rolling System"
+MODULE.author = "Claude"
+MODULE.description = "Enables players to roll in different directions when pressing ALT + W/A/S/D"
 
-ax.localization:Register("en", {
-    ["category.sway"] = "Sway",
-    ["option.sway"] = "Sway",
-    ["option.sway.help"] = "Enable or disable sway.",
-    ["option.sway.multiplier"] = "Sway Multiplier",
-    ["option.sway.multiplier.help"] = "Set the sway multiplier.",
-    ["option.sway.multiplier.sprint"] = "Sway Multiplier Sprint",
-    ["option.sway.multiplier.sprint.help"] = "Set the sway multiplier while sprinting.",
-})
+-- Configuration
+local ROLL_CONFIG = {
+    cooldown = 3, -- Time in seconds before a player can roll again
+    distance = 200, -- How far the roll will move the player
+    duration = 1, -- How long the roll animation/movement lasts
+    animations = {
+        forward = "evade_n",
+        back = "evade_s",
+        left = "evade_w",
+        right = "evade_e"
+    },
+    useCustomAnimSystem = true, -- Set to true if using WOS or other custom animation system
+    particleEffect = "generic_smoke", -- Particle effect to use during roll
+    particleFrequency = 0.05 -- How often to emit particles during roll (in seconds)
+}
 
-ax.option:Register("sway", {
-    Name = "option.sway",
-    Type = ax.types.bool,
-    Default = true,
-    Description = "option.sway.help",
-    NoNetworking = true,
-    Category = "category.sway"
-})
+-- Keep track of player rolling states
+local playerRollData = {}
 
-ax.option:Register("sway.multiplier", {
-    Name = "option.sway.multiplier",
-    Type = ax.types.number,
-    Default = 1,
-    Min = 0,
-    Max = 10,
-    Decimals = 1,
-    Description = "option.sway.multiplier.help",
-    NoNetworking = true,
-    Category = "category.sway"
-})
-
-ax.option:Register("sway.multiplier.sprint", {
-    Name = "option.sway.multiplier.sprint",
-    Type = ax.types.number,
-    Default = 1,
-    Min = 0,
-    Max = 10,
-    Decimals = 1,
-    Description = "option.sway.multiplier.sprint.help",
-    NoNetworking = true,
-    Category = "category.sway"
-})
-
-if ( !CLIENT ) then return end
-
-local SideMove = 0
-local JumpMove = 0
-
-local ViewModelBobVelocity = 0
-local ViewModelNotOnGround = 0
-
-local BobCT = 0
-local Multiplier = 0
-
-local SprintInertia = 0
-local WalkInertia = 0
-local CrouchMultiplier = 0
-local SprintMultiplier = 0
-local WalkMultiplier = 0
-
-local function GetViewModelBob(pos, ang)
-    local step = 10
-    local mag = 1
-    local ts = 0
-
-    local swayEnabled = ax.option:Get("sway")
-    if ( !swayEnabled ) then return pos, ang end
-
-    local swayMult = ax.option:Get("sway.multiplier")
-    local swayMultSprint = ax.option:Get("sway.multiplier.sprint")
-
-    local client = ax.client
-    local ft = FrameTime()
-    local time = ft * 4
-
-    Multiplier = Lerp(time * 50, Multiplier, client:IsSprinting() and swayMultSprint or swayMult)
-
-    local velocityangle = client:GetVelocity()
-    local v = velocityangle:Length()
-    v = math.Clamp(v, 0, 500)
-    ViewModelBobVelocity = math.Approach(ViewModelBobVelocity, v, ft * 10000)
-    local d = math.Clamp(ViewModelBobVelocity / 500, 0, 1)
-
-    if ( client:OnGround() and client:GetMoveType() != MOVETYPE_NOCLIP ) then
-        ViewModelNotOnGround = math.Approach(ViewModelNotOnGround, 0, ft / 0.1)
-    else
-        ViewModelNotOnGround = math.Approach(ViewModelNotOnGround, 1, ft / 0.1)
-    end
-
-    local amount = 0.1
-
-    d = d * Lerp(amount, 1, 0.03) * Lerp(ts, 1, 1.5)
-    mag = d * 2
-    mag = mag * Lerp(ts, 1, 2)
-    step = Lerp(time, step, 12)
-
-    local sidemove = (client:GetVelocity():Dot(client:EyeAngles():Right()) / client:GetMaxSpeed()) * 4 * (1.5-amount)
-    SideMove = Lerp(math.Clamp(ft * 8, 0, 1), SideMove, sidemove)
-
-    CrouchMultiplier = Lerp(time, CrouchMultiplier, 1)
-    if ( client:Crouching() ) then
-        CrouchMultiplier = Lerp(time, CrouchMultiplier, 3.5 + amount * 10)
-        step = Lerp(time, step, 8)
-    end
-
-    local jumpmove = math.Clamp(math.ease.InExpo(math.Clamp(velocityangle.z, -150, 0) / -150) / 2 + math.ease.InExpo(math.Clamp(velocityangle.z, 0, 500) / 500) * -50, -4, 2.5) / 2
-    JumpMove = Lerp(math.Clamp(ft * 8, 0, 1), JumpMove, jumpmove)
-    local smoothjumpmove2 = math.Clamp(JumpMove, -0.3, 0.01) * (1.5 - amount)
-
-    if ( client:IsSprinting() ) then
-        SprintInertia = Lerp(ft * 2, SprintInertia, 1)
-        WalkInertia = Lerp(ft * 2, WalkInertia, 0)
-    else
-        SprintInertia = Lerp(ft * 2, SprintInertia, 0)
-        WalkInertia = Lerp(ft * 2, WalkInertia, 1)
-    end
-
-    if ( SprintInertia > 0 ) then
-        SprintMultiplier = Multiplier * SprintInertia
-        pos = pos - (ang:Up() * math.sin(BobCT * step) * 0.45 * ((math.sin(BobCT * 3.515) / 6) + 1) * mag * SprintMultiplier)
-        pos = pos + (ang:Forward() * math.sin(BobCT * step / 3) * 0.11 * ((math.sin(BobCT * 2) * ts * 1.25) + 1) * ((math.sin(BobCT * 0.615) / 6) + 2) * mag * SprintMultiplier)
-        pos = pos + (ang:Right() * (math.sin(BobCT * step / 2) + (math.cos(BobCT * step / 2))) * 0.55 * mag * SprintMultiplier)
-        ang:RotateAroundAxis(ang:Forward(), math.sin(BobCT * step / 2) * ((math.sin(BobCT * 6.151) / 6) + 1) * 9 * d * SprintMultiplier + SideMove * 1.5)
-        ang:RotateAroundAxis(ang:Right(), math.sin(BobCT * step * 0.12) * ((math.sin(BobCT * 1.521) / 6) + 1) * 1 * d * SprintMultiplier)
-        ang:RotateAroundAxis(ang:Up(), math.sin(BobCT * step / 2) * ((math.sin(BobCT * 1.521) / 6) + 1) * 6 * d * SprintMultiplier)
-        ang:RotateAroundAxis(ang:Right(), smoothjumpmove2 * 5)
-    end
-
-    if ( WalkInertia > 0 ) then
-        WalkMultiplier = Multiplier * WalkInertia
-        pos = pos - (ang:Up() * math.sin(BobCT * step) * 0.1 * ((math.sin(BobCT * 3.515) / 6) + 2) * mag * CrouchMultiplier * WalkMultiplier) - (ang:Up() * SideMove * -0.05) - (ang:Up() * smoothjumpmove2 / 6)
-        pos = pos + (ang:Forward() * math.sin(BobCT * step / 3) * 0.11 * ((math.sin(BobCT * 2) * ts * 1.25) + 1) * ((math.sin(BobCT * 0.615) / 6) + 1) * mag * WalkMultiplier)
-        pos = pos + (ang:Right() * (math.sin(BobCT * step / 2) + (math.cos(BobCT * step / 2))) * 0.55 * mag * WalkMultiplier)
-        ang:RotateAroundAxis(ang:Forward(), math.sin(BobCT * step / 2) * ((math.sin(BobCT * 6.151) / 6) + 1) * 5 * d * WalkMultiplier + SideMove)
-        ang:RotateAroundAxis(ang:Right(), math.sin(BobCT * step * 0.12) * ((math.sin(BobCT * 1.521) / 6) + 1) * 0.1 * d * WalkMultiplier)
-        ang:RotateAroundAxis(ang:Right(), smoothjumpmove2 * 5)
-    end
-
-    local steprate = Lerp(d, 1, 2.75)
-    steprate = Lerp(ViewModelNotOnGround, steprate, 0.75)
-
-    if ( IsFirstTimePredicted() or game.SinglePlayer() ) then
-        BobCT = BobCT + ( ft * steprate )
-    end
-
-    return pos, ang
+-- Initialize a player's roll data
+local function InitPlayerRollData(ply)
+    if !IsValid(ply) then return end
+    
+    playerRollData[ply:SteamID()] = {
+        isRolling = false,
+        lastRollTime = 0,
+        rollDirection = Vector(0, 0, 0),
+        rollEndTime = 0,
+        lastParticleTime = 0,
+        rollProgress = 0 -- For smooth movement (0 to 1)
+    }
 end
 
-DEFINE_BASECLASS("sway")
-function MODULE:CalcViewModelView(wep, vm, oldPos, oldAng, pos, ang)
-    if ( !IsValid(wep) or !IsValid(vm) ) then return end
-    if ( ax.client:InObserver() ) then return end
+-- Check if the player can roll based on cooldown and movement
+local function CanPlayerRoll(ply)
+    local steamID = ply:SteamID()
+    if !playerRollData[steamID] then
+        InitPlayerRollData(ply)
+    end
+    
+    local data = playerRollData[steamID]
+    
+    -- Can't roll if already rolling
+    if data.isRolling then return false end
+    
+    -- Check if cooldown has passed
+    if CurTime() - data.lastRollTime < ROLL_CONFIG.cooldown then return false end
+    
+    -- NEW: Prevent rolling if player is moving
+    if ply:GetVelocity():Length() > 10 then return false end
+    
+    return true
+end
 
-    pos, ang = GAMEMODE.BaseClass:CalcViewModelView(wep, vm, oldPos, oldAng, pos, ang)
-    pos, ang = GetViewModelBob(pos, ang)
+-- Play animation using various methods for compatibility
+local function PlayRollAnimation(ply, animName)
+    if not IsValid(ply) or not animName or animName == "" then return false end
 
-    return pos, ang
+    local seq = ply:LookupSequence(animName)
+    if seq and seq > 0 then
+        ply:AddVCDSequenceToGestureSlot(GESTURE_SLOT_CUSTOM, seq, 0, true)
+
+        -- Lock the sequence
+        ply:ForceSequence(animName)
+        ply:SetCycle(0)
+        ply:SetPlaybackRate(1) -- Prevent speed fluctuations
+
+        local startTime = CurTime()
+
+        -- Use a Think hook to manually update cycle
+        local uniqueHook = "RollAnimUpdate_" .. ply:EntIndex()
+        hook.Add("Think", uniqueHook, function()
+            if not IsValid(ply) or not playerRollData[ply:SteamID()] or not playerRollData[ply:SteamID()].isRolling then
+                hook.Remove("Think", uniqueHook)
+                return
+            end
+
+            local elapsed = CurTime() - startTime
+            local progress = math.Clamp(elapsed / ROLL_CONFIG.duration, 0, 1)
+
+            -- Apply animation cycle smoothly
+            ply:SetCycle(progress)
+        end)
+
+        -- Freeze movement if needed
+        local oldMoveType = ply:GetMoveType()
+        ply:SetMoveType(MOVETYPE_NONE)
+
+        timer.Simple(ROLL_CONFIG.duration, function()
+            if IsValid(ply) then
+                ply:SetMoveType(oldMoveType)
+                ply:LeaveSequence()
+                hook.Remove("Think", uniqueHook)
+            end
+        end)
+
+        return true
+    else
+        print("[RollAnim] Invalid animation sequence name: " .. animName)
+    end
+
+    return false
+end
+
+
+-- Create roll particles
+local function CreateRollParticles(ply)
+    if !IsValid(ply) then return end
+    
+    local steamID = ply:SteamID()
+    if !playerRollData[steamID] then return end
+    
+    local data = playerRollData[steamID]
+    
+    -- Only spawn particles at certain intervals
+    if CurTime() - data.lastParticleTime < ROLL_CONFIG.particleFrequency then return end
+    data.lastParticleTime = CurTime()
+
+    
+    
+    -- Create particle effect at player's feet
+    local particlePos = ply:GetPos() + Vector(0, 0, 10)
+
+    local particle = EffectData()
+    particle:SetOrigin(particlePos)
+    particle:SetEntity(ply)
+    particle:SetScale(1)
+    util.Effect("dust_cloud", particle)
+    util.Effect("WheelDust", particle)
+end
+
+-- Start rolling in a direction
+local function StartRoll(ply, direction, animation)
+    if !IsValid(ply) or !CanPlayerRoll(ply) then return end
+    
+    local steamID = ply:SteamID()
+    local data = playerRollData[steamID]
+    
+    -- Update roll data
+    data.isRolling = true
+    data.lastRollTime = CurTime()
+    data.rollDirection = direction
+    data.rollEndTime = CurTime() + ROLL_CONFIG.duration
+    data.rollProgress = 0
+    data.startPos = ply:GetPos()
+    data.endPos = ply:GetPos() + (direction * ROLL_CONFIG.distance)
+    
+    -- Play the roll animation
+    local animPlayed = PlayRollAnimation(ply, animation)
+end
+
+-- End rolling
+local function EndRoll(ply)
+    if !IsValid(ply) then return end
+    
+    local steamID = ply:SteamID()
+    if !playerRollData[steamID] then return end
+    
+    local data = playerRollData[steamID]
+    data.isRolling = false
+    
+    -- Notify client the roll has ended
+    net.Start("PlayerRolling")
+    net.WriteEntity(ply)
+    net.WriteString("")
+    net.WriteVector(Vector(0, 0, 0))
+    net.WriteBool(false) -- Ending roll
+    net.WriteBool(false) -- No animation
+    net.Broadcast()
+end
+
+-- Process rolling movement with smooth easing
+local function ProcessRolling()
+    for steamID, data in pairs(playerRollData) do
+        local ply = player.GetBySteamID(steamID)
+        
+        if IsValid(ply) and data.isRolling then
+            -- Check if roll should end
+            if CurTime() > data.rollEndTime then
+                EndRoll(ply)
+            else
+                -- Calculate smooth roll progress (0 to 1)
+                data.rollProgress = math.Clamp((CurTime() - data.lastRollTime) / ROLL_CONFIG.duration, 0, 1)
+                
+                -- Apply smooth easing (ease-in-out)
+                local easeProgress = data.rollProgress < 0.5 
+                    and 2 * data.rollProgress * data.rollProgress 
+                    or 1 - math.pow(-2 * data.rollProgress + 2, 2) / 2
+                
+                -- Calculate new position with smooth movement
+                local newPos = LerpVector(easeProgress, data.startPos, data.endPos)
+                
+                -- Apply movement if possible (simple collision check)
+                local trace = util.TraceHull({
+                    start = ply:GetPos(),
+                    endpos = newPos,
+                    filter = ply,
+                    mins = ply:OBBMins(),
+                    maxs = ply:OBBMaxs()
+                })
+                
+                if !trace.Hit then
+                    ply:SetPos(newPos)
+                    
+                    -- Create particles during roll
+                    CreateRollParticles(ply)
+                else
+                    -- Hit something, stop the roll
+                    EndRoll(ply)
+                end
+            end
+        end
+    end
+end
+
+-- Key press handling
+hook.Add("KeyPress", "RollKeyPress", function(ply, key)
+    -- Only server-side
+    if CLIENT then return end
+    
+    -- Check if ALT is held down (IN_WALK is ALT by default)
+    if !ply:KeyDown(IN_WALK) then return end
+    
+    local direction = Vector(0, 0, 0)
+    local animation = ""
+    
+    -- Determine roll direction based on movement keys
+    if key == IN_FORWARD then
+        -- Roll forward
+        direction = ply:GetForward()
+        animation = ROLL_CONFIG.animations.forward
+    elseif key == IN_BACK then
+        -- Roll backward
+        direction = -ply:GetForward()
+        animation = ROLL_CONFIG.animations.back
+    elseif key == IN_MOVELEFT then
+        -- Roll left
+        direction = -ply:GetRight()
+        animation = ROLL_CONFIG.animations.left
+    elseif key == IN_MOVERIGHT then
+        -- Roll right
+        direction = ply:GetRight()
+        animation = ROLL_CONFIG.animations.right
+    else
+        -- Not a movement key
+        return
+    end
+    
+    StartRoll(ply, direction, animation)
+end)
+
+-- Player initialization
+hook.Add("PlayerInitialSpawn", "InitRollData", function(ply)
+    InitPlayerRollData(ply)
+end)
+
+-- Process rolling movements
+hook.Add("Think", "ProcessRolling", ProcessRolling)
+
+-- Player disconnection cleanup
+hook.Add("PlayerDisconnected", "CleanupRollData", function(ply)
+    if playerRollData[ply:SteamID()] then
+        playerRollData[ply:SteamID()] = nil
+    end
+end)
+
+-- Block normal player movement during rolling
+hook.Add("StartCommand", "BlockMovementDuringRoll", function(ply, cmd)
+    if !IsValid(ply) then return end
+    
+    local steamID = ply:SteamID()
+    if playerRollData[steamID] and playerRollData[steamID].isRolling then
+        -- Prevent normal movement input during roll
+        cmd:ClearMovement()
+        cmd:ClearButtons()
+    end
+end)
+
+hook.Add("EntityTakeDamage", "NoKnockbackWhileRolling", function(target, dmginfo)
+    if target:IsPlayer() then
+        print("Player taking damage: " .. target:Nick())
+        local data = playerRollData[target:SteamID()]
+        if data and data.isRolling then
+            return true
+        end
+    end
+end)
+
+
+-- Networking
+if SERVER then
+    util.AddNetworkString("PlayerRolling")
+end
+
+if CLIENT then
+    -- Client-side visual effects for rolling
+    net.Receive("PlayerRolling", function()
+        local ply = net.ReadEntity()
+        local animation = net.ReadString()
+        local direction = net.ReadVector()
+        local isStarting = net.ReadBool()
+        local animSuccess = net.ReadBool()
+        
+        if IsValid(ply) then
+            -- Client-side animation playback if server reported failure
+            if isStarting and animation != "" and !animSuccess then
+                -- Try to play animation on client as a fallback
+                if ply.SetWOSAnimation then
+                    ply:SetWOSAnimation(animation)
+                elseif ply.DoAnimation then
+                    ply:DoAnimation(animation)
+                end
+            end
+        end
+    end)
 end

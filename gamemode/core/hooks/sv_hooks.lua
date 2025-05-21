@@ -16,9 +16,19 @@ function GM:PlayerInitialSpawn(client)
 end
 
 function GM:PlayerReady(client)
+    client:SetPos(Vector(2385.432861, 392.607391, 497.918518))
+    timer.Simple(0.01, function()
+        if ( !IsValid(client) ) then return end
+        
+        client:ConCommand("stopsound") -- Uses the stopsound console command
+    end)
+    
+    
     ax.character:CacheAll(client)
     ax.util:SendChatText(nil, Color(25, 75, 150), client:SteamName() .. " has joined the server.")
-    ax.net:Start(client, "mainmenu")
+
+    vgui.Create("ax_intro", client)
+   
 
     hook.Run("PostPlayerInitialSpawn", client)
 

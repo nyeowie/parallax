@@ -1,5 +1,6 @@
 local MODULE = MODULE
 
+
 MODULE.Name = "Third Person"
 MODULE.Description = "Allows players to view themselves in third person."
 MODULE.Author = "Riggs"
@@ -111,3 +112,31 @@ local meta = FindMetaTable("Player")
 function meta:InThirdperson()
     return SERVER and ax.option:Get(self, "thirdperson", false) or ax.option:Get("thirdperson", false)
 end
+
+util.AddNetworkString("AX_BulletShake")
+
+hook.Add("EntityFireBullets", "AX_ThirdPerson_BulletFired", function(entity, bulletData)
+    if not IsValid(entity) or not entity:IsPlayer() then return end
+
+    net.Start("AX_BulletShake")
+    net.Send(entity)
+end)
+
+
+
+-- Create a network string for damage shake
+util.AddNetworkString("AX_DamageShake")
+
+-- Server-side damage hook
+hook.Add("EntityTakeDamage", "AX_ThirdPerson_DamageTaken", function(target, dmgInfo)
+    if not IsValid(target) or not target:IsPlayer() then return end
+    
+    -- Only send the shake effect if damage is significant enough
+    local damage = dmgInfo:GetDamage()
+    if damage < 1 then return end
+    
+    -- Send the damage amount to the client for scaling the shake effect
+    net.Start("AX_DamageShake")
+    net.WriteFloat(damage)
+    net.Send(target)
+end)

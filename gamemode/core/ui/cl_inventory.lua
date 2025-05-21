@@ -233,7 +233,8 @@ function PANEL:SetItem(id)
         self.icon:SetLookAng(camData.angles)
     end
 
-    if ( item.Actions.Equip or item.Actions.EquipUn ) then
+    -- Add nil check for item.Actions before trying to access it
+    if ( item.Actions and (item.Actions.Equip or item.Actions.EquipUn) ) then
         local equipped = item:GetData("equipped")
         if ( equipped ) then
             self:SetBackgroundColor(ax.color:Get("success"))
@@ -256,7 +257,10 @@ function PANEL:DoRightClick()
     if ( !item ) then return end
 
     local base = ax.item:Get(item:GetUniqueID())
-    if ( !base or !base.Actions ) then return end
+    if ( !base ) then return end
+    
+    -- Add nil check for base.Actions before trying to access it
+    if ( !base.Actions ) then return end
 
     local menu = DermaMenu()
     for actionName, actionData in pairs(base.Actions) do

@@ -141,7 +141,17 @@ function ax.util:PrintError(...)
     local realmColor = SERVER and serverErrorColor or clientErrorColor
     MsgC(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(arguments))
 
-    if ( CLIENT ) then
+    if ( SERVER ) then
+        for k, v in player.Iterator() do
+            if ( v:IsAdmin() ) then
+                v:Notify("An error has occurred in the server. Check the console for more information.", NOTIFY_ERROR)
+            end
+        end
+    else
+        if ( IsValid(ax.client) ) then
+            ax.client:Notify("An error has occurred in the client. Check the console for more information.", NOTIFY_ERROR)
+        end
+
         chat.AddText(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(arguments))
     end
 

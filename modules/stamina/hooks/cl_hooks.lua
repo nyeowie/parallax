@@ -29,8 +29,8 @@ function MODULE:HUDPaint()
         if ( staminaAlpha > 0 ) then
             local scrW, scrH = ScrW(), ScrH()
 
-            local barWidth, barHeight = scrW / 3, ScreenScale(8)
-            local barX, barY = scrW / 2 - barWidth / 2, scrH / 1.05 - barHeight / 2
+            local barWidth, barHeight = scrW / 3, ScreenScale(1)
+            local barX, barY = scrW / 2 - barWidth / 2, scrH / 1.01 - barHeight / 2
 
             ax.util:DrawBlurRect(barX, barY, barWidth, barHeight, 2, nil, staminaAlpha)
 
