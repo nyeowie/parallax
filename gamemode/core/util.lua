@@ -114,9 +114,6 @@ end
 
 local violetColor = Color(142, 68, 255)
 
-local serverErrorColor = Color(136, 221, 255, 255)
-local clientErrorColor = Color(255, 221, 102, 255)
-
 local serverMsgColor = Color(156, 241, 255, 200)
 local clientMsgColor = Color(255, 241, 122, 200)
 
@@ -129,20 +126,24 @@ function ax.util:Print(...)
     local realmColor = SERVER and serverMsgColor or clientMsgColor
     MsgC(violetColor, "[Parallax] ", realmColor, unpack(arguments))
 
+    if ( CLIENT and ax.config and ax.config.Get and ax.config:Get("debug.developer") ) then
+        chat.AddText(violetColor, "[Parallax] ", realmColor, unpack(arguments))
+    end
+
     return arguments
 end
 
 --- Prints an error message to the console.
 -- @realm shared
 -- @param ... any The message to print.
+local colorError = Color(255, 120, 120)
 function ax.util:PrintError(...)
     local arguments = self:PreparePackage(...)
 
-    local realmColor = SERVER and serverErrorColor or clientErrorColor
-    MsgC(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(arguments))
+    MsgC(violetColor, "[Parallax] ", colorError, "[Error] ", unpack(arguments))
 
-    if ( CLIENT ) then
-        chat.AddText(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(arguments))
+    if ( CLIENT and ax.config and ax.config.Get and ax.config:Get("debug.developer") ) then
+        chat.AddText(violetColor, "[Parallax] ", colorError, "[Error] ", unpack(arguments))
     end
 
     return arguments
@@ -156,6 +157,26 @@ function ax.util:PrintWarning(...)
     local arguments = self:PreparePackage(...)
 
     MsgC(violetColor, "[Parallax] ", colorWarning, "[Warning] ", unpack(arguments))
+
+    if ( CLIENT and ax.config and ax.config.Get and ax.config:Get("debug.developer") ) then
+        chat.AddText(violetColor, "[Parallax] ", colorWarning, "[Warning] ", unpack(arguments))
+    end
+
+    return arguments
+end
+
+--- Prints a success message to the console.
+-- @realm shared
+-- @param ... any The message to print.
+local colorSuccess = Color(120, 255, 120)
+function ax.util:PrintSuccess(...)
+    local arguments = self:PreparePackage(...)
+
+    MsgC(violetColor, "[Parallax] ", colorSuccess, "[Success] ", unpack(arguments))
+
+    if ( CLIENT and ax.config:Get("debug.developer") ) then
+        chat.AddText(violetColor, "[Parallax] ", colorSuccess, "[Success] ", unpack(arguments))
+    end
 
     return arguments
 end
@@ -218,8 +239,8 @@ end
 -- @string find The type to search for.
 -- @return string The type of the value.
 function ax.util:FindString(str, find)
-    if ( !isstring(str) or !isstring(find) ) then
-        ax.util:PrintError("Attempted to find a string with no value", str, find)
+    if ( str == nil or find == nil ) then
+        ax.util:PrintError("Attempted to find a string with no value to find for! (" .. str .. ", " .. find .. ")")
         return false
     end
 
@@ -235,7 +256,10 @@ end
 -- @string find The value to search for.
 -- @return boolean Whether or not the value was found.
 function ax.util:FindText(txt, find)
-    if ( !txt or !find ) then return end
+    if ( txt == nil or find == nil ) then
+        ax.util:PrintError("Attempted to find a string with no value to find for! (" .. txt .. ", " .. find .. ")")
+        return false
+    end
 
     local words = string.Explode(" ", txt)
     for k, v in ipairs(words) do
@@ -588,6 +612,34 @@ function ax.util:GetStringTime(input)
     return totalSeconds, hasValidUnit
 end
 
+local stored = {}
+
+--- Returns a material with the given path and parameters.
+-- @realm shared
+-- @param path string The path to the material.
+-- @param parameters string The parameters to apply to the material.
+-- @return Material The material that was created.
+-- @usage local vignette = ax.util:GetMaterial("parallax/overlay_vignette.png")
+-- surface.SetMaterial(vignette)
+function ax.util:GetMaterial(path, parameters)
+    if ( !tostring(path) ) then
+        ax.util:PrintError("Attempted to get a material with no path", path, parameters)
+        return false
+    end
+
+    parameters = tostring(parameters or "")
+    local uniqueID = Format("material.%s.%s", path, parameters)
+
+    if ( stored[uniqueID] ) then
+        return stored[uniqueID]
+    end
+
+    local mat = Material(path, parameters)
+    stored[uniqueID] = mat
+
+    return mat
+end
+
 if ( CLIENT ) then
     --- Returns the given text's width.
     -- @realm client
@@ -617,34 +669,6 @@ if ( CLIENT ) then
     function ax.util:GetTextSize(font, text)
         surface.SetFont(font)
         return surface.GetTextSize(text)
-    end
-
-    local stored = {}
-
-    --- Returns a material with the given path and parameters.
-    -- @realm client
-    -- @param path string The path to the material.
-    -- @param parameters string The parameters to apply to the material.
-    -- @return Material The material that was created.
-    -- @usage local vignette = ax.util:GetMaterial("parallax/overlay_vignette.png")
-    -- surface.SetMaterial(vignette)
-    function ax.util:GetMaterial(path, parameters)
-        if ( !tostring(path) ) then
-            ax.util:PrintError("Attempted to get a material with no path", path, parameters)
-            return false
-        end
-
-        parameters = tostring(parameters or "")
-        local uniqueID = Format("material.%s.%s", path, parameters)
-
-        if ( stored[uniqueID] ) then
-            return stored[uniqueID]
-        end
-
-        local mat = Material(path, parameters)
-        stored[uniqueID] = mat
-
-        return mat
     end
 
     local blurMaterial = ax.util:GetMaterial("pp/blurscreen")
