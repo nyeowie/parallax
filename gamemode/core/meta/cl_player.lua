@@ -11,8 +11,14 @@ See the [Garry's Mod Wiki](https://wiki.garrysmod.com/page/Category:Player) for 
 local PLAYER = FindMetaTable("Player")
 
 function PLAYER:GetData(key, default)
-    local data = self:GetTable().axDatabase.data or {}
+    local tbl = self:GetTable()
+    local axDatabase = tbl.axDatabase
+    if ( !axDatabase ) then
+        ax.util:PrintError("Player does not have a database connection, unable to get data.")
+        return default
+    end
 
+    local data = axDatabase.data or {}
     if ( isstring(data) ) then
         data = util.JSONToTable(data) or {}
     else

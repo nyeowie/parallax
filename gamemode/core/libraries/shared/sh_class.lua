@@ -77,7 +77,14 @@ function ax.class:Register(classData)
     local bResult = hook.Run("PreClassRegistered", CLASS)
     if ( bResult == false ) then return false end
 
-    local uniqueID = string.lower(string.gsub(CLASS.Name, "%s", "_"))
+    local uniqueID = string.lower(string.gsub(CLASS.Name, "%s+", "_")) .. "_" .. CLASS.Faction
+    for k, v in pairs(self.instances) do
+        if ( v.UniqueID == uniqueID ) then
+            ax.util:PrintError("Attempted to register a class that already exists!")
+            return false, "Attempted to register a class that already exists!"
+        end
+    end
+
     CLASS.UniqueID = CLASS.UniqueID or uniqueID
 
     self.stored[CLASS.UniqueID] = CLASS
@@ -89,14 +96,11 @@ function ax.class:Register(classData)
         end
     end
 
-    self.instances[#self.instances + 1] = CLASS
-
-    CLASS.ID = #self.instances
+    table.insert(self.instances, CLASS)
+    CLASS.ID = table.Count(self.instances)
+    self.stored[CLASS.UniqueID] = CLASS
 
     hook.Run("PostClassRegistered", CLASS)
-
-    faction.Classes = faction.Classes or {}
-    faction.Classes[#faction.Classes + 1] = CLASS
 
     return CLASS.ID
 end
@@ -108,7 +112,15 @@ function ax.class:Get(identifier)
     end
 
     if ( tonumber(identifier) ) then
-        return self.instances[identifier]
+        identifier = tonumber(identifier)
+
+        for k, v in ipairs(self.instances) do
+            if ( v:GetID() == identifier ) then
+                return v
+            end
+        end
+
+        return nil
     end
 
     if ( self.stored[identifier] ) then
@@ -140,4 +152,22 @@ function ax.class:CanSwitchTo(client, classID)
     end
 
     return true
+end
+
+function ax.class:OnSwitch(client, classID)
+    local class = self:Get(classID)
+    if ( !class ) then return false end
+
+    local hookRun = hook.Run("CanPlayerJoinClass", client, classID)
+    if ( hookRun != nil and hookRun == false ) then return false end
+
+    if ( isfunction(class.OnSwitch) ) then
+        class:OnSwitch(client)
+    end
+
+    return true
+end
+
+function ax.class:GetAll()
+    return self.instances
 end

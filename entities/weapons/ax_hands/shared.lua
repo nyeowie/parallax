@@ -277,7 +277,6 @@ function SWEP:SecondaryAttack()
 
     local data = {}
     data.start = owner:GetShootPos()
-    print(owner:GetAimVector(), ax.config:Get("hands.range", 96))
     data.endpos = data.start + owner:GetAimVector() * ax.config:Get("hands.range", 96)
     data.mask = MASK_SHOT
     data.filter = {self, owner}
