@@ -170,7 +170,10 @@ ax.character:RegisterVariable("faction", {
     Editable = true,
 
     OnValidate = function(self, parent, payload, client)
-        return ax.faction:CanSwitchTo(client, payload.faction)
+        local canSwitch, reason = ax.faction:CanSwitchTo(client, payload.faction)
+        if ( !canSwitch ) then
+            return false, reason or "You cannot switch to this faction!"
+        end
     end,
 
     OnSet = function(this, character, value)
