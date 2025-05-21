@@ -37,7 +37,7 @@ function playerMeta:SetRelay(key, value, recipient)
         ax.relay.user[self] = ax.relay.user[self] or {}
         ax.relay.user[self][key] = value
 
-        ax.net:Start(recipient, "relay.user", key, value)
+        ax.net:Start(recipient, "relay.user", self:EntIndex(), key, value)
     end
 end
 
@@ -51,13 +51,17 @@ function playerMeta:GetRelay(key, default)
 end
 
 if ( CLIENT ) then
-    ax.net:Hook("relay.user", function(key, value)
+    ax.net:Hook("relay.user", function(index, key, value)
         if ( value == nil ) then return end
 
-        local client = LocalPlayer()
-
-        ax.relay.user[client] = ax.relay.user[client] or {}
-        ax.relay.user[client][key] = value
+        local client = Entity(index)
+        if ( IsValid(client) ) then
+            ax.relay.user[client] = ax.relay.user[client] or {}
+            ax.relay.user[client][key] = value
+        else
+            ax.util:PrintError("Attempted to set relay for invalid client: " .. tostring(index))
+            return
+        end
     end)
 end
 
@@ -87,6 +91,9 @@ if ( CLIENT ) then
         if ( IsValid(ent) ) then
             ax.relay.entity[ent] = ax.relay.entity[ent] or {}
             ax.relay.entity[ent][key] = value
+        else
+            ax.util:PrintError("Attempted to set relay for invalid entity: " .. tostring(index))
+            return
         end
     end)
 end
