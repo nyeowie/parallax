@@ -5,5 +5,5 @@ MODULE.Description = "A test module."
 MODULE.Author = "Riggs"
 
 function MODULE:OnReloaded()
-    print(self.Name .. " has been reloaded.")
+    ax.util:Print(self.Name .. " has been reloaded.")
 end

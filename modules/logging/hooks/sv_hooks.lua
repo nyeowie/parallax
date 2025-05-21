@@ -40,6 +40,16 @@ function MODULE:PlayerDisconnected(client)
     self:Send(self:Format(client) .. " disconnected")
 end
 
+function MODULE:PlayerSwitchWeapon(client, oldWeapon, newWeapon)
+    if ( !IsValid(client) ) then return end
+
+    if ( IsValid(oldWeapon) ) then
+        self:Send(self:Format(client) .. " switched from " .. self:Format(oldWeapon) .. " to " .. self:Format(newWeapon))
+    else
+        self:Send(self:Format(client) .. " switched to " .. self:Format(newWeapon))
+    end
+end
+
 function MODULE:PlayerSay(client, text)
     self:Send(self:Format(client) .. " said: " .. text)
 end

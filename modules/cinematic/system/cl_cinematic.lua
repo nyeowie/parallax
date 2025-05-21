@@ -234,6 +234,6 @@ concommand.Add("ax_cinematic_print", function(ply, cmd, arguments)
         pos.x - ply:GetForward().x * 64, pos.y - ply:GetForward().y * 64, pos.z - ply:GetForward().z * 64
     )
 
-    print(output)
+    ax.util:Print(output)
     SetClipboardText(output)
 end)

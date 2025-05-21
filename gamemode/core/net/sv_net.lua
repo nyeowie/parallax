@@ -19,41 +19,47 @@ ax.net:Hook("character.delete", function(client, characterID)
 end)
 
 ax.net:Hook("character.create", function(client, payload)
-    if ( !istable(payload) ) then return end
+    if ( !istable(payload) ) then
+        ax.net:Start(client, "character.create.failed", "Invalid payload!")
+        return
+    end
 
-    local bResult = hook.Run("PreCharacterCreate", client, payload)
-    if ( bResult == false ) then return end
+    local canCreate, reason = hook.Run("PreCharacterCreate", client, payload)
+    if ( canCreate == false ) then
+        ax.net:Start(client, "character.create.failed", reason or "Failed to create character!")
+        return
+    end
 
     for k, v in pairs(ax.character.variables) do
         if ( v.Editable != true ) then continue end
 
-        -- This is a bit of a hack, but it works for nax.
+        -- This is a bit of a hack, but it works for now.
         if ( v.Type == ax.types.string or v.Type == ax.types.text ) then
             payload[k] = string.Trim(payload[k] or "")
         end
 
-        if ( v.OnValidate ) then
-            local validate, reason = v:OnValidate(client, payload, client)
+        if ( isfunction(v.OnValidate) ) then
+            local validate, reason = v:OnValidate(nil, payload, client)
             if ( !validate ) then
                 ax.net:Start(client, "character.create.failed", reason or "Failed to validate character!")
-
                 return
             end
         end
     end
 
-    local character, reason = ax.character:Create(client, payload)
-    if ( !character ) then
-        ax.net:Start(client, "character.create.failed", reason or "Failed to create character!")
+    ax.character:Create(client, payload, function(success, result)
+        if ( !success ) then
+            ax.util:PrintError("Failed to create character: " .. result)
+            ax.net:Start(client, "character.create.failed", result or "Failed to create character!")
+            return
+        end
 
-        return
-    end
+        ax.character:Load(client, result:GetID())
 
-    ax.character:Load(client, character:GetID())
+        ax.net:Start(client, "character.create")
 
-    ax.net:Start(client, "character.create")
-
-    hook.Run("PostCharacterCreate", client, character, payload)
+        hook.Run("PostCharacterCreate", client, character, payload)
+    end)
 end)
 
 --[[-----------------------------------------------------------------------------

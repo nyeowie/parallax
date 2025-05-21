@@ -3,7 +3,10 @@
 -----------------------------------------------------------------------------]]--
 
 ax.net:Hook("character.cache.all", function(data)
-    if ( !istable(data) ) then print("Invalid data!") return end
+    if ( !istable(data) ) then
+        ax.util:PrintError("Invalid data received for character cache!")
+        return
+    end
 
     local client = ax.client
     local clientTable = client:GetTable()

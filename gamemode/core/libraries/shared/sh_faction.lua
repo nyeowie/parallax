@@ -20,8 +20,8 @@ local DEFAULT_MODELS = {
 }
 
 ax.faction = {}
-ax.faction.stored = {}
-ax.faction.instances = {}
+ax.faction.stored = ax.faction.stored or {}
+ax.faction.instances = ax.faction.instances or {}
 
 ax.faction.meta = {
     GetName = function(self)
@@ -46,7 +46,14 @@ ax.faction.meta = {
         return self.IsDefault or false
     end,
     GetClasses = function(self)
-        return self.Classes or {}
+        local classes = {}
+        for k, v in ipairs(ax.class:GetAll()) do
+            if ( v.Faction == self.ID ) then
+                classes[#classes + 1] = v
+            end
+        end
+
+        return classes
     end,
 
     __tostring = function(self)
@@ -90,23 +97,24 @@ function ax.faction:Register(factionData)
     end
 
     local bResult = hook.Run("PreFactionRegistered", FACTION)
-    if ( bResult == false ) then return false end
+    if ( bResult == false ) then
+        ax.util:PrintError("Attempted to register a faction that was blocked by a hook!")
+        return false, "Attempted to register a faction that was blocked by a hook!"
+    end
 
     local uniqueID = string.lower(string.gsub(FACTION.Name, "%s+", "_"))
-    FACTION.UniqueID = FACTION.UniqueID or uniqueID
-
-    self.stored[FACTION.UniqueID] = FACTION
-
-    for k, v in ipairs(self.instances) do
-        if ( v.UniqueID == FACTION.UniqueID ) then
-            table.remove(self.instances, k)
-            break
+    for k, v in pairs(self.instances) do
+        if ( v.UniqueID == uniqueID ) then
+            ax.util:PrintError("Attempted to register a faction that already exists!")
+            return false, "Attempted to register a faction that already exists!"
         end
     end
 
-    self.instances[#self.instances + 1] = FACTION
+    FACTION.UniqueID = FACTION.UniqueID or uniqueID
 
-    FACTION.ID = #self.instances
+    table.insert(self.instances, FACTION)
+    FACTION.ID = table.Count(self.instances)
+    self.stored[FACTION.UniqueID] = FACTION
 
     team.SetUp(FACTION.ID, FACTION.Name, FACTION.Color, false)
     hook.Run("PostFactionRegistered", FACTION)
@@ -120,12 +128,23 @@ function ax.faction:Get(identifier)
         return false, "Attempted to get a faction without an identifier!"
     end
 
-    if ( self.stored[identifier] ) then
-        return self.stored[identifier]
+    if ( isnumber(identifier) ) then
+        if ( identifier < 1 ) then
+            ax.util:PrintError("Attempted to get a faction with an invalid ID!")
+            return false, "Attempted to get a faction with an invalid ID!"
+        end
+
+        identifier = tonumber(identifier)
+
+        for k, v in ipairs(self:GetAll()) do
+            if ( ax.util:FindString(v.ID, identifier) ) then
+                return v
+            end
+        end
     end
 
-    if ( isnumber(identifier) ) then
-        return self.instances[identifier]
+    if ( self.stored[identifier] ) then
+        return self.stored[identifier]
     end
 
     for k, v in ipairs(self.instances) do
@@ -138,10 +157,15 @@ function ax.faction:Get(identifier)
 end
 
 function ax.faction:CanSwitchTo(client, factionID, oldFactionID)
-    if ( !IsValid(client) ) then return false end
+    if ( !IsValid(client) ) then
+        ax.util:PrintError("Attempted to check if a player can switch to a faction without a client!")
+        return false, "Attempted to check if a player can switch to a faction without a client!"
+    end
 
     local faction = self:Get(factionID)
-    if ( !faction ) then return false end
+    if ( !faction ) then
+        return false, "Faction does not exist."
+    end
 
     if ( oldFactionID ) then
         local oldFaction = self:Get(oldFactionID)
@@ -149,7 +173,7 @@ function ax.faction:CanSwitchTo(client, factionID, oldFactionID)
             if ( oldFaction.ID == faction.ID ) then return false end
 
             if ( oldFaction.CanLeave and !oldFaction:CanLeave(client) ) then
-                return false
+                return false, "You cannot leave this faction."
             end
         end
     end
@@ -158,11 +182,15 @@ function ax.faction:CanSwitchTo(client, factionID, oldFactionID)
     if ( hookRun != nil and hookRun == false ) then return false end
 
     if ( faction.CanSwitchTo and !faction:CanSwitchTo(client) ) then
-        return false
+        return false, "You cannot switch to this faction."
     end
 
     if ( !faction.IsDefault and !client:HasWhitelist(faction.UniqueID) ) then
-        return false
+        return false, "You do not have permission to join this faction."
+    end
+
+    if ( isfunction(faction.OnSwitch) ) then
+        faction:OnSwitch(client)
     end
 
     return true

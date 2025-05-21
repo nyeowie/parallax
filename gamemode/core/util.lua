@@ -114,9 +114,6 @@ end
 
 local violetColor = Color(142, 68, 255)
 
-local serverErrorColor = Color(136, 221, 255, 255)
-local clientErrorColor = Color(255, 221, 102, 255)
-
 local serverMsgColor = Color(156, 241, 255, 200)
 local clientMsgColor = Color(255, 241, 122, 200)
 
@@ -129,30 +126,24 @@ function ax.util:Print(...)
     local realmColor = SERVER and serverMsgColor or clientMsgColor
     MsgC(violetColor, "[Parallax] ", realmColor, unpack(arguments))
 
+    if ( CLIENT and ax.config and ax.config.Get and ax.config:Get("debug.developer") ) then
+        chat.AddText(violetColor, "[Parallax] ", realmColor, unpack(arguments))
+    end
+
     return arguments
 end
 
 --- Prints an error message to the console.
 -- @realm shared
 -- @param ... any The message to print.
+local colorError = Color(255, 120, 120)
 function ax.util:PrintError(...)
     local arguments = self:PreparePackage(...)
 
-    local realmColor = SERVER and serverErrorColor or clientErrorColor
-    MsgC(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(arguments))
+    MsgC(violetColor, "[Parallax] ", colorError, "[Error] ", unpack(arguments))
 
-    if ( SERVER ) then
-        for k, v in player.Iterator() do
-            if ( v:IsAdmin() ) then
-                v:Notify("An error has occurred in the server. Check the console for more information.", NOTIFY_ERROR)
-            end
-        end
-    else
-        if ( IsValid(ax.client) ) then
-            ax.client:Notify("An error has occurred in the client. Check the console for more information.", NOTIFY_ERROR)
-        end
-
-        chat.AddText(violetColor, "[Parallax] ", realmColor, "[Error] ", unpack(arguments))
+    if ( CLIENT and ax.config and ax.config.Get and ax.config:Get("debug.developer") ) then
+        chat.AddText(violetColor, "[Parallax] ", colorError, "[Error] ", unpack(arguments))
     end
 
     return arguments
@@ -166,6 +157,26 @@ function ax.util:PrintWarning(...)
     local arguments = self:PreparePackage(...)
 
     MsgC(violetColor, "[Parallax] ", colorWarning, "[Warning] ", unpack(arguments))
+
+    if ( CLIENT and ax.config and ax.config.Get and ax.config:Get("debug.developer") ) then
+        chat.AddText(violetColor, "[Parallax] ", colorWarning, "[Warning] ", unpack(arguments))
+    end
+
+    return arguments
+end
+
+--- Prints a success message to the console.
+-- @realm shared
+-- @param ... any The message to print.
+local colorSuccess = Color(120, 255, 120)
+function ax.util:PrintSuccess(...)
+    local arguments = self:PreparePackage(...)
+
+    MsgC(violetColor, "[Parallax] ", colorSuccess, "[Success] ", unpack(arguments))
+
+    if ( CLIENT and ax.config:Get("debug.developer") ) then
+        chat.AddText(violetColor, "[Parallax] ", colorSuccess, "[Success] ", unpack(arguments))
+    end
 
     return arguments
 end
@@ -228,8 +239,8 @@ end
 -- @string find The type to search for.
 -- @return string The type of the value.
 function ax.util:FindString(str, find)
-    if ( !isstring(str) or !isstring(find) ) then
-        ax.util:PrintError("Attempted to find a string with no value", str, find)
+    if ( str == nil or find == nil ) then
+        ax.util:PrintError("Attempted to find a string with no value to find for! (" .. str .. ", " .. find .. ")")
         return false
     end
 
@@ -245,7 +256,10 @@ end
 -- @string find The value to search for.
 -- @return boolean Whether or not the value was found.
 function ax.util:FindText(txt, find)
-    if ( !txt or !find ) then return end
+    if ( txt == nil or find == nil ) then
+        ax.util:PrintError("Attempted to find a string with no value to find for! (" .. txt .. ", " .. find .. ")")
+        return false
+    end
 
     local words = string.Explode(" ", txt)
     for k, v in ipairs(words) do
@@ -392,6 +406,34 @@ function ax.util:SafeParseTable(input)
     return {}
 end
 
+local directions = {
+    { min = -180.0, max = -157.5, name = "S"  },
+    { min = -157.5, max = -112.5, name = "SE" },
+    { min = -112.5, max = -67.5,  name = "E"  },
+    { min = -67.5,  max = -22.5,  name = "NE" },
+    { min = -22.5,  max = 22.5,   name = "N"  },
+    { min = 22.5,   max = 67.5,   name = "NW" },
+    { min = 67.5,   max = 112.5,  name = "W"  },
+    { min = 112.5,  max = 157.5,  name = "SW" },
+    { min = 157.5,  max = 180.0,  name = "S"  }
+}
+
+--- Returns the compass direction from a yaw angle using a lookup table.
+-- @param ang Angle The angle to interpret.
+-- @return string Compass heading (e.g., "N", "SW")
+-- @usage local heading = ax.util:GetHeadingFromAngle(client:EyeAngles())
+function ax.util:GetHeadingFromAngle(ang)
+    local yaw = ang.yaw or ang[2]
+
+    for _, dir in ipairs(directions) do
+        if ( yaw > dir.min and yaw <= dir.max ) then
+            return dir.name
+        end
+    end
+
+    return "N" -- Default to North if no match is found
+end
+
 local basePathFix = SoundDuration("npc/metropolice/pain1.wav") > 0 and "" or "../../hl2/sound/"
 
 --- Queues and plays multiple sounds from an entity with spacing and optional offsets.
@@ -519,6 +561,85 @@ function ax.util:LoadEntities(path)
     self:LoadEntityFolder(path, "effects", "EFFECT", effects and effects.Register, nil, true)
 end
 
+--- Returns the current difference between local time and UTC in seconds.
+-- @realm shared
+-- @return number Time difference to UTC in seconds
+-- @usage local utcOffset = ax.util:GetUTCTime()
+function ax.util:GetUTCTime()
+    local utcTable = os.date("!*t")
+    local localTable = os.date("*t")
+
+    localTable.isdst = false
+
+    return os.difftime(os.time(utcTable), os.time(localTable))
+end
+
+local time = {
+    s = 1,                  -- Seconds
+    m = 60,                 -- Minutes
+    h = 3600,               -- Hours
+    d = 86400,              -- Days
+    w = 604800,             -- Weeks
+    mo = 2592000,           -- Months (approximate)
+    y = 31536000            -- Years (approximate)
+}
+
+--- Converts a formatted time string into total seconds.
+-- @realm shared
+-- @string input Text to interpret (e.g., "5y2d7w")
+-- @return number Time in seconds
+-- @return boolean True if format was valid, false otherwise
+-- @usage local seconds = ax.util:GetStringTime("2h30m")
+function ax.util:GetStringTime(input)
+    local rawMinutes = tonumber(input)
+    if ( rawMinutes ) then
+        return math.abs(rawMinutes * 60), true
+    end
+
+    local totalSeconds = 0
+    local hasValidUnit = false
+
+    for numberStr, suffix in input:lower():gmatch("(%d+)(%a+)") do
+        local count = tonumber(numberStr)
+        local multiplier = time[suffix]
+
+        if ( count and multiplier ) then
+            totalSeconds = totalSeconds + math.abs(count * multiplier)
+            hasValidUnit = true
+        end
+    end
+
+    return totalSeconds, hasValidUnit
+end
+
+local stored = {}
+
+--- Returns a material with the given path and parameters.
+-- @realm shared
+-- @param path string The path to the material.
+-- @param parameters string The parameters to apply to the material.
+-- @return Material The material that was created.
+-- @usage local vignette = ax.util:GetMaterial("parallax/overlay_vignette.png")
+-- surface.SetMaterial(vignette)
+function ax.util:GetMaterial(path, parameters)
+    if ( !tostring(path) ) then
+        ax.util:PrintError("Attempted to get a material with no path", path, parameters)
+        return false
+    end
+
+    parameters = tostring(parameters or "")
+    local uniqueID = Format("material.%s.%s", path, parameters)
+
+    if ( stored[uniqueID] ) then
+        return stored[uniqueID]
+    end
+
+    local mat = Material(path, parameters)
+    stored[uniqueID] = mat
+
+    return mat
+end
+
 if ( CLIENT ) then
     --- Returns the given text's width.
     -- @realm client
@@ -550,34 +671,6 @@ if ( CLIENT ) then
         return surface.GetTextSize(text)
     end
 
-    local stored = {}
-
-    --- Returns a material with the given path and parameters.
-    -- @realm client
-    -- @param path string The path to the material.
-    -- @param parameters string The parameters to apply to the material.
-    -- @return Material The material that was created.
-    -- @usage local vignette = ax.util:GetMaterial("parallax/overlay_vignette.png")
-    -- surface.SetMaterial(vignette)
-    function ax.util:GetMaterial(path, parameters)
-        if ( !tostring(path) ) then
-            ax.util:PrintError("Attempted to get a material with no path", path, parameters)
-            return false
-        end
-
-        parameters = tostring(parameters or "")
-        local uniqueID = Format("material.%s.%s", path, parameters)
-
-        if ( stored[uniqueID] ) then
-            return stored[uniqueID]
-        end
-
-        local mat = Material(path, parameters)
-        stored[uniqueID] = mat
-
-        return mat
-    end
-
     local blurMaterial = ax.util:GetMaterial("pp/blurscreen")
     local scrW, scrH = ScrW(), ScrH()
 
@@ -588,7 +681,7 @@ if ( CLIENT ) then
     -- @param alpha number Overlay alpha (default 255).
     -- @usage ax.util:DrawBlur(panel, 6, 0.2, 200)
     function ax.util:DrawBlur(panel, intensity, steps, alpha)
-        if ( !IsValid(panel) ) then return end
+        if ( !IsValid(panel) or alpha == 0 ) then return end
 
         if ( ax.option:Get("performance.blur") != true ) then
             surface.SetDrawColor(30, 30, 30, alpha or (intensity or 5) * 20)
@@ -623,8 +716,10 @@ if ( CLIENT ) then
     -- @param alpha number Overlay alpha (default 255).
     -- @usage ax.util:DrawBlurRect(0, 0, 512, 256, 8, 0.2, 180)
     function ax.util:DrawBlurRect(x, y, width, height, intensity, steps, alpha)
+        if ( alpha == 0 ) then return end
+
         if ( ax.option:Get("performance.blur") != true ) then
-            surface.SetDrawColor(30, 30, 30, (intensity or 5) * 20)
+            surface.SetDrawColor(30, 30, 30, alpha or (intensity or 5) * 20)
             surface.DrawRect(x, y, width, height)
             return
         end
