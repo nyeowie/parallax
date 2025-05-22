@@ -264,6 +264,7 @@ function ax.inventory:RemoveItem(inventoryID, itemID)
             ax.net:Start(receivers, "inventory.item.remove", inventoryID, itemID)
         end
     end
+    hook.Run("OnItemRemoved", item, inventoryID)
 end
 
 function ax.item:Spawn(itemID, uniqueID, position, angles, callback, data)
